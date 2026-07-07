@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>المشاريع | MEDS Digital Services</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+/* ════════════════════════════════════════════
+   HEADER — same as client-dashboard.html
+════════════════════════════════════════════ */
+.site-header {
+  position: sticky; top: 0; z-index: 200;
+  height: 60px;
+  background: var(--surface-glass);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.header-inner {
+  width: min(1280px, calc(100% - 32px));
+  height: 100%; margin: 0 auto;
+  display: flex; align-items: center; gap: 0;
+}
+.header-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 900; font-size: 1rem; color: var(--text);
+  text-decoration: none; padding-inline-end: 20px;
+  border-inline-end: 1px solid var(--line); flex-shrink: 0;
+}
+.header-brand .bmark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: grid; place-items: center; color: #fff; font-size: 1rem; font-weight: 900;
+  box-shadow: 0 2px 10px var(--primary-glow); transition: transform 0.2s;
+}
+.header-brand:hover .bmark { transform: scale(1.1) rotate(-5deg); }
+.header-nav { display: flex; align-items: center; gap: 2px; padding: 0 16px; flex: 1; }
+.nav-tab {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border-radius: 7px; font-size: 0.875rem; font-weight: 600; color: var(--muted);
+  background: none; border: none; cursor: pointer; font-family: inherit;
+  text-decoration: none; transition: color 0.15s, background 0.15s; white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: var(--surface-muted); }
+.nav-tab.active { color: var(--text); background: var(--surface-muted); }
+.nav-tab svg { opacity: 0.6; }
+.nav-tab:hover svg, .nav-tab.active svg { opacity: 1; }
+.header-controls {
+  display: flex; align-items: center; gap: 6px; padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--line); flex-shrink: 0;
+}
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px; border: none; background: none;
+  color: var(--muted); cursor: pointer; display: grid; place-items: center;
+  font-size: 1rem; transition: color 0.15s, background 0.15s; position: relative;
+}
+.icon-btn:hover { color: var(--text); background: var(--surface-muted); }
+.icon-btn .notif-dot {
+  position: absolute; top: 6px; inset-inline-end: 6px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--danger); border: 1.5px solid var(--surface-glass);
+}
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
+  border-radius: 99px; font-size: 0.75rem; font-weight: 700;
+  background: var(--surface-muted); border: 1px solid var(--line); color: var(--muted);
+}
+.status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: pulse 2s infinite; }
+.status-pill .dot.online { background: var(--success); }
+.status-pill .dot.offline { background: var(--danger); animation: none; }
+.user-menu { position: relative; }
+.user-avatar-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line);
+  background: linear-gradient(135deg, var(--primary), #2563eb); color: #fff;
+  font-size: 0.82rem; font-weight: 900; cursor: pointer; display: grid; place-items: center;
+  font-family: inherit; transition: border-color 0.15s, transform 0.15s;
+}
+.user-avatar-btn:hover { border-color: var(--primary); transform: scale(1.05); }
+.user-dropdown {
+  position: absolute; top: calc(100% + 8px); inset-inline-end: 0; width: 220px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14); overflow: hidden; z-index: 300; display: none;
+  animation: fadeDown 0.15s ease;
+}
+.user-dropdown.open { display: block; }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-6px);} to { opacity: 1; transform: translateY(0);} }
+.dropdown-user-info { padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.dropdown-user-info .name { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.dropdown-user-info .role { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.dropdown-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 0.875rem;
+  font-weight: 600; color: var(--text); cursor: pointer; border: none; background: none;
+  width: 100%; text-align: inherit; font-family: inherit; transition: background 0.12s;
+}
+.dropdown-item:hover { background: var(--surface-muted); }
+.dropdown-item svg { color: var(--muted); flex-shrink: 0; }
+.dropdown-item.danger { color: var(--danger); }
+.dropdown-item.danger svg { color: var(--danger); }
+.dropdown-sep { height: 1px; background: var(--line); margin: 4px 0; }
+
+/* ════════════════════════════════════════════
+   SETTINGS DRAWER — same as client-dashboard.html
+════════════════════════════════════════════ */
+.settings-overlay {
+  position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(3px); display: none; animation: fadeOverlay 0.2s ease;
+}
+.settings-overlay.open { display: block; }
+@keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
+.settings-drawer {
+  position: fixed; top: 0; inset-inline-end: -480px; width: 440px; max-width: 96vw;
+  height: 100vh; background: var(--surface); border-inline-start: 1px solid var(--line);
+  z-index: 500; display: flex; flex-direction: column;
+  transition: inset-inline-end 0.3s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.12); overflow: hidden;
+}
+.settings-drawer.open { inset-inline-end: 0; }
+.drawer-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 18px 24px;
+  border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
+.drawer-header h2 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.drawer-close {
+  width: 32px; height: 32px; border-radius: 8px; border: none; background: none;
+  color: var(--muted); cursor: pointer; display: grid; place-items: center;
+  font-family: inherit; font-size: 1.1rem; transition: background 0.15s, color 0.15s;
+}
+.drawer-close:hover { background: var(--surface-muted); color: var(--text); }
+.drawer-body { flex: 1; overflow-y: auto; padding: 0 24px 32px; }
+.settings-section { margin-top: 28px; }
+.settings-section-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+}
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--line);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 0.875rem; font-weight: 600; color: var(--text); }
+.settings-row-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.settings-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #2563eb);
+  display: grid; place-items: center; color: #fff; font-size: 1.6rem; font-weight: 900;
+  margin: 0 auto 16px;
+}
+.toggle-switch {
+  width: 40px; height: 22px; border-radius: 99px; background: var(--line);
+  border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0;
+}
+.toggle-switch.on { background: var(--primary); }
+.toggle-switch::after {
+  content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; top: 3px; inset-inline-start: 3px; transition: inset-inline-start 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after { inset-inline-start: 21px; }
+.settings-field {
+  width: 100%; background: var(--surface-muted); border: 1.5px solid var(--line);
+  border-radius: 8px; padding: 9px 12px; font: inherit; color: var(--text); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s; margin-top: 8px;
+}
+.settings-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+.settings-field[readonly] { opacity: 0.65; cursor: default; }
+.settings-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px;
+  font: inherit; cursor: pointer; border: 1.5px solid var(--line); background: var(--surface);
+  color: var(--text); transition: all 0.15s;
+}
+.settings-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+.settings-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.settings-btn.primary:hover { background: var(--primary-dark); }
+.settings-btn.danger { border-color: rgba(220,38,38,0.3); color: var(--danger); }
+.settings-btn.danger:hover { background: rgba(220,38,38,0.06); }
+.pw-form { display: grid; gap: 10px; margin-top: 10px; }
+
+@media (max-width: 900px) { .header-nav { display: none; } }
+@media (max-width: 640px) { .header-brand span:last-child { display: none; } .status-pill { display: none; } }
+
+/* ════════════════════════════════════════════
+   PROJECTS PAGE BODY — new design
+════════════════════════════════════════════ */
+.projects-page { padding: 30px 0 60px; }
+
+.pj-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.pj-hero h1 { margin: 0 0 6px; font-size: 1.65rem; font-weight: 900; letter-spacing: -0.02em; }
+.pj-hero p { margin: 0; color: var(--muted); font-size: 0.9rem; max-width: 620px; }
+.pj-hero-actions { display: flex; gap: 8px; }
+.pj-btn {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 9px;
+  font: inherit; font-weight: 700; font-size: 0.86rem; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--text);
+  transition: all 0.15s; text-decoration: none;
+}
+.pj-btn:hover { border-color: var(--primary); color: var(--primary-dark); transform: translateY(-1px); }
+.pj-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 3px 14px var(--primary-glow); }
+.pj-btn.primary:hover { background: var(--primary-dark); }
+
+/* summary strip */
+.pj-summary { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 26px; }
+.pj-sum-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 16px 18px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 14px;
+}
+.pj-sum-card::after {
+  content: ''; position: absolute; inset-inline-end: -20px; top: -20px; width: 90px; height: 90px;
+  background: radial-gradient(circle, var(--primary-glow), transparent 70%); pointer-events: none;
+}
+.pj-sum-ico {
+  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  font-size: 1.15rem; flex-shrink: 0;
+}
+.pj-sum-num { font-size: 1.5rem; font-weight: 900; line-height: 1; color: var(--text); }
+.pj-sum-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 3px; }
+.pj-sum-card.loading .pj-sum-num { color: transparent; background: var(--line); border-radius: 6px; animation: pulseBg 1.2s infinite; }
+@keyframes pulseBg { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+/* toolbar */
+.pj-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+}
+.pj-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.pj-filter-chip {
+  padding: 7px 15px; border-radius: 99px; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface-muted); color: var(--muted);
+  transition: all 0.15s; font-family: inherit;
+}
+.pj-filter-chip:hover { border-color: var(--primary); color: var(--primary-dark); }
+.pj-filter-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.pj-search { position: relative; min-width: 240px; }
+.pj-search input {
+  width: 100%; padding: 9px 38px 9px 14px; border-radius: 9px; border: 1.5px solid var(--line);
+  background: var(--surface-muted); color: var(--text); font: inherit; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pj-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+.pj-search svg { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+
+/* grid */
+.pj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px; }
+
+.pj-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+  overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s, border-color 0.2s;
+}
+.pj-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--primary) 30%, var(--line) 70%); }
+.pj-card-bar { height: 4px; width: 100%; }
+.pj-card-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; }
+
+.pj-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.pj-card-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pj-card-ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0; color: #fff; }
+.pj-card-title { margin: 0; font-size: 1rem; font-weight: 800; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pj-card-service { margin: 3px 0 0; font-size: 0.79rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pj-ring { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; }
+.pj-ring-inner { width: 39px; height: 39px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-size: 0.72rem; font-weight: 800; }
+
+.pj-status-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px;
+  font-size: 0.74rem; font-weight: 700; white-space: nowrap; margin-top: 12px; align-self: flex-start;
+}
+.pj-status-badge .sdot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pjs-pending { background: rgba(99,102,241,0.12); color: #6366f1; }
+.pjs-in_progress { background: rgba(37,99,235,0.12); color: #2563eb; }
+.pjs-completed { background: rgba(22,163,74,0.12); color: #16a34a; }
+.pjs-on_hold { background: rgba(217,119,6,0.12); color: #d97706; }
+.pjs-cancelled { background: var(--surface-muted); color: var(--muted); }
+
+.pj-card-desc { margin: 14px 0 0; font-size: 0.84rem; color: var(--muted); line-height: 1.6; min-height: 42px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.pj-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.pj-tag {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px;
+  font-size: 0.71rem; font-weight: 700; background: var(--surface-muted); border: 1px solid var(--line); color: var(--muted);
+}
+
+.pj-card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.pj-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.pj-meta-item .k { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+.pj-meta-item .v { font-size: 0.85rem; font-weight: 800; color: var(--text); }
+.pj-meta-item .v.late { color: var(--danger); }
+
+.pj-card-footer { display: flex; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--line); background: var(--surface-muted); }
+.pj-card-footer button, .pj-card-footer a {
+  flex: 1; text-align: center; padding: 9px 10px; border-radius: 9px; font: inherit; font-weight: 700;
+  font-size: 0.82rem; cursor: pointer; border: 1.5px solid var(--line); background: var(--surface);
+  color: var(--text); transition: all 0.15s; text-decoration: none;
+}
+.pj-card-footer button:hover, .pj-card-footer a:hover { border-color: var(--primary); color: var(--primary-dark); }
+.pj-card-footer .pj-action { background: rgba(255,255,255,0.9); color: var(--text); }
+.pj-card-footer .pj-action-invoice { border-color: #2563eb; color: #2563eb; }
+.pj-card-footer .pj-action-payment { border-color: #d97706; color: #b45309; }
+.pj-card-footer .pj-action-deliver { border-color: #16a34a; color: #166534; }
+.pj-card-completed { box-shadow: 0 10px 32px rgba(22,163,74,0.12); border-color: rgba(22,163,74,0.2); }
+.pj-card-completed .pj-card-bar { background: linear-gradient(135deg,#16a34a,#4ade80); }
+.pj-card-footer .pj-open { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pj-card-footer .pj-open:hover { background: var(--primary-dark); color: #fff; }
+
+/* skeleton cards */
+.pj-skel-card { height: 268px; border-radius: 18px; background: linear-gradient(90deg, var(--line) 25%, var(--surface-muted) 50%, var(--line) 75%); background-size: 200% 100%; animation: shimmerPj 1.4s infinite; }
+@keyframes shimmerPj { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* empty / error state */
+.pj-empty { text-align: center; padding: 90px 20px; color: var(--muted); grid-column: 1 / -1; }
+.pj-empty .ico { font-size: 2.6rem; margin-bottom: 14px; }
+.pj-empty h3 { margin: 0 0 8px; font-size: 1.2rem; font-weight: 800; color: var(--text); }
+.pj-empty p { margin: 0 0 18px; font-size: 0.88rem; }
+
+/* details modal */
+.pd-overlay {
+  position: fixed; inset: 0; z-index: 700; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.pd-overlay.open { opacity: 1; pointer-events: auto; }
+.pd-modal {
+  width: min(640px, 100%); max-height: 88vh; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28); transform: translateY(24px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+.pd-overlay.open .pd-modal { transform: translateY(0) scale(1); }
+.pd-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); z-index: 2; }
+.pd-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pd-header-ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; color: #fff; flex-shrink: 0; }
+.pd-header h3 { margin: 0; font-size: 1.05rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-header p { margin: 2px 0 0; font-size: 0.79rem; color: var(--muted); }
+.pd-detail-card { background: var(--surface-muted); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 18px; margin-top: 14px; }
+.pd-detail-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.pd-detail-item { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.pd-detail-item strong { display: block; margin-bottom: 8px; color: var(--text); font-size: 0.95rem; }
+.pd-detail-item span { color: var(--muted); line-height: 1.6; }
+.proj-image-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 12px; }
+.proj-image-item { border-radius: 18px; overflow: hidden; display: block; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-sm); }
+.proj-image-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.25s ease; }
+.proj-image-item:hover img { transform: scale(1.04); }
+.proj-attachments-docs { display: grid; gap: 10px; margin-top: 12px; }
+.attachment-link { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); text-decoration: none; font-weight: 600; }
+.attachment-link:hover { text-decoration: underline; }
+.attachment-label { margin: 0 0 8px; color: var(--muted); font-size: 0.92rem; }
+.pd-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0; transition: background 0.15s, color 0.15s; }
+.pd-close:hover { background: var(--surface-muted); color: var(--text); }
+.pd-body { padding: 22px 24px; }
+.pd-progress-row { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--surface-muted); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 18px; }
+.pd-progress-bar { flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.pd-progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
+.pd-progress-num { font-size: 0.95rem; font-weight: 900; min-width: 42px; text-align: end; }
+.pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.pd-info-box { background: var(--surface-muted); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.pd-info-box .k { font-size: 0.72rem; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+.pd-info-box .v { font-size: 0.88rem; font-weight: 800; color: var(--text); }
+.pd-section-title { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+.pd-desc-box { background: var(--surface-muted); border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 0.88rem; color: var(--text); line-height: 1.75; white-space: pre-wrap; margin-bottom: 18px; }
+.pd-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--surface-muted); position: sticky; bottom: 0; }
+.pd-btn { padding: 9px 20px; border-radius: 9px; font: inherit; font-weight: 700; cursor: pointer; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); transition: all 0.15s; text-decoration: none; }
+.pd-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+.pd-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pd-btn.primary:hover { background: var(--primary-dark); }
+
+.toast {
+  position: fixed; bottom: 24px; inset-inline-start: 24px; z-index: 900;
+  padding: 12px 20px; border-radius: 10px; font-size: 0.88rem; font-weight: 700;
+  background: var(--text); color: var(--surface); box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  display: none; animation: slideFromBottom 0.3s ease;
+}
+.toast.show { display: block; }
+@keyframes slideFromBottom { from { opacity:0; transform:translateY(12px);} to { opacity:1; transform:translateY(0);} }
+
+@media (max-width: 720px) {
+  .pj-summary { grid-template-columns: 1fr 1fr; }
+  .pd-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .pj-summary { grid-template-columns: 1fr; }
+  .pj-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HEADER (identical to client-dashboard.html) ════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="header-brand" href="index.html">
+      <div class="bmark">M</div>
+      <span>MEDS</span>
+    </a>
+
+    <nav class="header-nav">
+      <a class="nav-tab" href="client-dashboard.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <a class="nav-tab active" href="projects.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        المشاريع
+      </a>
+      <a class="nav-tab" href="chats.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        المحادثات
+      </a>
+      <a class="nav-tab" href="invoices.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        الفواتير
+      </a>
+    </nav>
+
+    <div class="header-controls">
+      <div class="status-pill">
+        <div class="dot" id="apiDot"></div>
+        <span id="apiStatus">فحص...</span>
+      </div>
+
+      <button class="icon-btn" id="btnNotif" title="الإشعارات">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+
+      <button class="icon-btn" id="themeToggle" title="تبديل المظهر">
+        <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <div class="user-menu">
+        <button class="user-avatar-btn" id="userAvatarBtn" title="حسابي" type="button">
+          <span id="avatarLetter">م</span>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="dropdown-user-info">
+            <div class="name" id="ddName">جارٍ التحميل...</div>
+            <div class="role" id="ddEmail">—</div>
+          </div>
+          <button class="dropdown-item" id="ddSettings">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+            الإعدادات
+          </button>
+          <button class="dropdown-item" id="ddProfile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            الملف الشخصي
+          </button>
+          <div class="dropdown-sep"></div>
+          <button class="dropdown-item danger" id="ddLogout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            تسجيل الخروج
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════ SETTINGS DRAWER (identical to client-dashboard.html) ════════════════ -->
+<div class="settings-overlay" id="settingsOverlay"></div>
+<aside class="settings-drawer" id="settingsDrawer" role="dialog" aria-modal="true" aria-label="الإعدادات">
+  <div class="drawer-header">
+    <h2>⚙️ الإعدادات</h2>
+    <button class="drawer-close" id="closeSettings">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="settings-section">
+      <p class="settings-section-title">الملف الشخصي</p>
+      <div style="text-align:center;padding:16px 0 8px;">
+        <div class="settings-avatar" id="settingsAvatar">م</div>
+        <div style="font-size:0.875rem;font-weight:700;" id="settingsFullName">—</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;" id="settingsRole">عميل</div>
+      </div>
+      <div style="display:grid;gap:10px;margin-top:8px;">
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">الاسم الأول</label>
+          <input class="settings-field" id="sfFirstName" placeholder="الاسم الأول">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">الاسم العائلي</label>
+          <input class="settings-field" id="sfLastName" placeholder="الاسم العائلي">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">اسم المستخدم</label>
+          <input class="settings-field" id="sfUsername" placeholder="username" readonly>
+        </div>
+        <button class="settings-btn primary" id="btnSaveProfile" style="width:100%;justify-content:center;">حفظ التغييرات</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <p class="settings-section-title">معلومات تسجيل الدخول</p>
+      <div class="settings-row">
+        <div style="width:100%;">
+          <label class="settings-row-label" for="sfEmail">البريد الإلكتروني</label>
+          <input class="settings-field" id="sfEmail" type="email" autocomplete="email" placeholder="email@example.com">
+        </div>
+      </div>
+      <div class="settings-row">
+        <div style="width:100%;">
+          <label class="settings-row-label" for="sfPhone">رقم الهاتف</label>
+          <input class="settings-field" id="sfPhone" type="tel" autocomplete="tel" placeholder="+213 XXX XXX XXX">
+        </div>
+      </div>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div class="settings-row-label">تغيير كلمة المرور</div>
+        <form class="pw-form" id="pwForm" style="width:100%;" autocomplete="on" onsubmit="return false;">
+          <input type="text" name="username" id="sfUsernameHint" autocomplete="username"
+                 style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true" tabindex="-1">
+          <input class="settings-field" type="password" id="sfOldPw" name="current-password" autocomplete="current-password" placeholder="كلمة المرور الحالية">
+          <input class="settings-field" type="password" id="sfNewPw" name="new-password" autocomplete="new-password" placeholder="كلمة المرور الجديدة (6 أحرف+)">
+          <input class="settings-field" type="password" id="sfConfirmPw" name="new-password-confirm" autocomplete="new-password" placeholder="تأكيد كلمة المرور الجديدة">
+          <button type="button" class="settings-btn primary" id="btnChangePw" style="width:100%;justify-content:center;">تحديث كلمة المرور</button>
+        </form>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">آخر دخول</div><div class="settings-row-sub" id="sfLastLogin">—</div></div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">تاريخ إنشاء الحساب</div><div class="settings-row-sub" id="sfCreatedAt">—</div></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <p class="settings-section-title">التفضيلات</p>
+      <div class="settings-row">
+        <div><div class="settings-row-label">الوضع الداكن</div><div class="settings-row-sub">تغيير مظهر التطبيق</div></div>
+        <button class="toggle-switch" id="darkToggle" type="button"></button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">إشعارات البريد</div><div class="settings-row-sub">استقبال تحديثات المشاريع</div></div>
+        <button class="toggle-switch on" id="emailNotifToggle" type="button"></button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <p class="settings-section-title">منطقة خطرة</p>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div><div class="settings-row-label">حذف الحساب</div><div class="settings-row-sub">سيتم حذف جميع بياناتك بشكل نهائي</div></div>
+        <button class="settings-btn danger" id="btnDeleteAccount">🗑️ حذف حسابي</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════ MAIN — projects body ════════════════ -->
+<div class="app-shell">
+  <main class="container projects-page">
+
+    <div class="pj-hero">
+      <div>
+        <h1>مشاريعك</h1>
+        <p>كل مشاريعك المسجّلة في مكان واحد — تابع الحالة، نسبة الإنجاز، والمواعيد بشكل مرتب واحترافي.</p>
+      </div>
+      <div class="pj-hero-actions">
+        <button class="pj-btn" id="btnRefreshProjects">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          تحديث
+        </button>
+        <a class="pj-btn primary" href="new-service.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          طلب خدمة جديدة
+        </a>
+      </div>
+    </div>
+
+    <div class="pj-summary" id="pjSummary">
+      <div class="pj-sum-card loading" id="sumTotal">
+        <div class="pj-sum-ico" style="background:rgba(37,99,235,0.12);color:#2563eb;">📁</div>
+        <div><div class="pj-sum-num" id="sumTotalNum">—</div><div class="pj-sum-label">إجمالي المشاريع</div></div>
+      </div>
+      <div class="pj-sum-card loading" id="sumActive">
+        <div class="pj-sum-ico" style="background:rgba(13,148,136,0.12);color:var(--primary-dark);">🚀</div>
+        <div><div class="pj-sum-num" id="sumActiveNum">—</div><div class="pj-sum-label">مشاريع نشطة</div></div>
+      </div>
+      <div class="pj-sum-card loading" id="sumDone">
+        <div class="pj-sum-ico" style="background:rgba(22,163,74,0.12);color:var(--success);">✅</div>
+        <div><div class="pj-sum-num" id="sumDoneNum">—</div><div class="pj-sum-label">مشاريع مكتملة</div></div>
+      </div>
+      <div class="pj-sum-card loading" id="sumBudget">
+        <div class="pj-sum-ico" style="background:rgba(217,119,6,0.12);color:var(--warning);">💰</div>
+        <div><div class="pj-sum-num" id="sumBudgetNum">—</div><div class="pj-sum-label">إجمالي الميزانية (دج)</div></div>
+      </div>
+    </div>
+
+    <div class="pj-toolbar">
+      <div class="pj-filters" id="pjFilters">
+        <button class="pj-filter-chip active" data-filter="all">الكل</button>
+        <button class="pj-filter-chip" data-filter="pending">قيد الانتظار</button>
+        <button class="pj-filter-chip" data-filter="in_progress">قيد التنفيذ</button>
+        <button class="pj-filter-chip" data-filter="completed">مكتمل</button>
+        <button class="pj-filter-chip" data-filter="on_hold">متوقف</button>
+        <button class="pj-filter-chip" data-filter="cancelled">ملغى</button>
+      </div>
+      <div class="pj-search">
+        <input type="text" id="pjSearch" placeholder="ابحث عن مشروع...">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+    </div>
+
+    <div class="pj-grid" id="pjGrid">
+      <div class="pj-skel-card"></div>
+      <div class="pj-skel-card"></div>
+      <div class="pj-skel-card"></div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script>
+const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+if (!token) window.location.href = 'login.html';
+const API_ORIGIN = API_CONFIG.BASE.replace('/api', '');
+
+function toast(msg, ok = true) {
+  const el = document.getElementById('toast');
+  el.textContent = (ok ? '✅ ' : '❌ ') + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+function escapeHtml(v){ return String(v||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+
+/* ── theme (shared with dashboard) ── */
+const darkToggleSw = document.getElementById('darkToggle');
+function applyTheme(dark) {
+  document.body.classList.toggle('dark-mode', dark);
+  darkToggleSw.classList.toggle('on', dark);
+  const icon = document.getElementById('themeIcon');
+  icon.setAttribute('d', dark
+    ? 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'
+    : 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z');
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+applyTheme(localStorage.getItem('theme') === 'dark');
+document.getElementById('themeToggle').addEventListener('click', () => applyTheme(!document.body.classList.contains('dark-mode')));
+darkToggleSw.addEventListener('click', () => applyTheme(!document.body.classList.contains('dark-mode')));
+
+/* ── user dropdown ── */
+const userAvatarBtn = document.getElementById('userAvatarBtn');
+const userDropdown  = document.getElementById('userDropdown');
+userAvatarBtn.addEventListener('click', (e) => { e.stopPropagation(); userDropdown.classList.toggle('open'); });
+document.addEventListener('click', () => userDropdown.classList.remove('open'));
+document.getElementById('ddLogout').addEventListener('click', () => { localStorage.removeItem('token'); window.location.href = 'login.html'; });
+document.getElementById('ddSettings').addEventListener('click', openSettings);
+document.getElementById('ddProfile').addEventListener('click', openSettings);
+
+/* ── settings drawer ── */
+function openSettings() {
+  userDropdown.classList.remove('open');
+  document.getElementById('settingsDrawer').classList.add('open');
+  document.getElementById('settingsOverlay').classList.add('open');
+  loadUserInfo();
+}
+function closeSettings() {
+  document.getElementById('settingsDrawer').classList.remove('open');
+  document.getElementById('settingsOverlay').classList.remove('open');
+}
+document.getElementById('closeSettings').addEventListener('click', closeSettings);
+document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
+
+async function loadUserInfo() {
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!r.ok) throw new Error();
+    const result = await r.json();
+    const u = result.user || result.data || {};
+    const fullName = `${u.first_name||''} ${u.last_name||''}`.trim() || u.username || '—';
+    const letter = fullName.charAt(0) || 'م';
+    document.getElementById('avatarLetter').textContent = letter;
+    document.getElementById('ddName').textContent = fullName;
+    document.getElementById('ddEmail').textContent = u.email || '—';
+    document.getElementById('settingsAvatar').textContent = letter;
+    document.getElementById('settingsFullName').textContent = fullName;
+    document.getElementById('settingsRole').textContent = u.role === 'admin' ? 'مدير النظام' : 'عميل';
+    document.getElementById('sfFirstName').value = u.first_name || '';
+    document.getElementById('sfLastName').value  = u.last_name  || '';
+    document.getElementById('sfUsername').value  = u.username   || '';
+    document.getElementById('sfEmail').value = u.email || '';
+    document.getElementById('sfPhone').value = u.phone || '';
+    document.getElementById('sfLastLogin').textContent = u.last_login ? new Date(u.last_login).toLocaleString('ar-DZ') : 'غير متاح';
+    const usernameHint = document.getElementById('sfUsernameHint');
+    if (usernameHint) usernameHint.value = u.email || u.username || '';
+    document.getElementById('sfCreatedAt').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('ar-DZ') : '—';
+  } catch {}
+}
+
+document.getElementById('btnSaveProfile').addEventListener('click', async () => {
+  const body = {
+    first_name: document.getElementById('sfFirstName').value.trim(),
+    last_name:  document.getElementById('sfLastName').value.trim(),
+    email:      document.getElementById('sfEmail').value.trim(),
+    phone:      document.getElementById('sfPhone').value.trim(),
+  };
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/profile`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { const err = await r.json().catch(() => ({})); throw new Error(err.error || err.message || 'فشل الحفظ'); }
+    toast('تم حفظ البيانات بنجاح');
+    loadUserInfo();
+  } catch (e) { toast(e.message || 'فشل الحفظ – تحقق من الاتصال', false); }
+});
+
+document.getElementById('btnChangePw').addEventListener('click', async () => {
+  const oldPw = document.getElementById('sfOldPw').value;
+  const newPw = document.getElementById('sfNewPw').value;
+  const confPw = document.getElementById('sfConfirmPw').value;
+  if (!oldPw || !newPw || !confPw) return toast('يرجى ملء جميع حقول كلمة المرور', false);
+  if (newPw !== confPw) return toast('كلمتا المرور غير متطابقتين', false);
+  if (newPw.length < 6) return toast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', false);
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ old_password: oldPw, new_password: newPw })
+    });
+    if (!r.ok) throw new Error((await r.json()).message || 'فشل');
+    toast('تم تحديث كلمة المرور');
+    ['sfOldPw','sfNewPw','sfConfirmPw'].forEach(id => document.getElementById(id).value = '');
+  } catch (e) { toast(e.message || 'فشل تحديث كلمة المرور', false); }
+});
+
+document.getElementById('btnDeleteAccount').addEventListener('click', () => {
+  if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+  toast('هذه الميزة غير مفعّلة بعد', false);
+});
+document.getElementById('emailNotifToggle').addEventListener('click', function() { this.classList.toggle('on'); });
+
+/* ── API health ── */
+async function checkAPI() {
+  const dot = document.getElementById('apiDot');
+  const label = document.getElementById('apiStatus');
+  try {
+    const r = await fetch(`${API_ORIGIN}/health`, { signal: AbortSignal.timeout(3000) });
+    dot.className = r.ok ? 'dot online' : 'dot offline';
+    label.textContent = r.ok ? 'متصل' : 'خطأ';
+  } catch { dot.className = 'dot offline'; label.textContent = 'غير متاح'; }
+}
+checkAPI();
+setInterval(checkAPI, 30000);
+
+/* ══════════════════════════════════
+   PROJECTS DATA + RENDERING
+══════════════════════════════════ */
+const STATUS_MAP = {
+  pending:     { label: 'قيد الانتظار', cls: 'pjs-pending' },
+  in_progress: { label: 'قيد التنفيذ',  cls: 'pjs-in_progress' },
+  completed:   { label: 'مكتمل',        cls: 'pjs-completed' },
+  on_hold:     { label: 'متوقف مؤقتاً', cls: 'pjs-on_hold' },
+  cancelled:   { label: 'ملغى',         cls: 'pjs-cancelled' },
+};
+const DOMAIN_META = {
+  dev: { icon: '💻', gradient: 'linear-gradient(135deg,#0d9488,#2563eb)', ring: '#0d9488' },
+  mkt: { icon: '📣', gradient: 'linear-gradient(135deg,#8b5cf6,#ec4899)', ring: '#8b5cf6' },
+  sec: { icon: '🔒', gradient: 'linear-gradient(135deg,#dc2626,#f59e0b)', ring: '#dc2626' },
+  default: { icon: '📌', gradient: 'linear-gradient(135deg,var(--primary),var(--accent))', ring: 'var(--primary)' }
+};
+
+let allProjects = [];
+let activeFilter = 'all';
+let searchTerm = '';
+
+function getDomainMeta(p) { return DOMAIN_META[p.domain] || DOMAIN_META.default; }
+
+function getProgressColor(pct, late) {
+  if (late || pct < 30) return 'var(--danger)';
+  if (pct >= 70) return 'var(--success)';
+  return 'var(--warning)';
+}
+
+function parseFormData(p) {
+  let fd = p.form_data || {};
+  if (typeof fd === 'string') { try { fd = JSON.parse(fd); } catch { fd = {}; } }
+  return fd;
+}
+
+function getDomainTags(p) {
+  const fd = parseFormData(p);
+  if (p.domain === 'dev') {
+    const type = fd.project_type ? `<span class="pj-tag">🛠 ${escapeHtml(fd.project_type)}</span>` : '';
+    const feats = Array.isArray(fd.features) ? fd.features.slice(0,3).map(f => `<span class="pj-tag">✦ ${escapeHtml(f)}</span>`).join('') : '';
+    return type + feats;
+  }
+  if (p.domain === 'mkt') {
+    const ch = Array.isArray(fd.channels) ? fd.channels.slice(0,3).map(c => `<span class="pj-tag">📢 ${escapeHtml(c)}</span>`).join('') : '';
+    const bud = fd.ad_budget ? `<span class="pj-tag">💰 ${escapeHtml(String(fd.ad_budget))}</span>` : '';
+    return ch + bud;
+  }
+  if (p.domain === 'sec') {
+    const url = fd.target_url ? `<span class="pj-tag">🎯 ${escapeHtml(fd.target_url)}</span>` : '';
+    const stack = fd.tech_stack ? `<span class="pj-tag">⚙ ${escapeHtml(fd.tech_stack)}</span>` : '';
+    return url + stack;
+  }
+  return '';
+}
+
+const FIELD_LABELS = {
+  project_type: 'نوع المشروع', features: 'الميزات المطلوبة', pages: 'عدد الصفحات',
+  design_style: 'أسلوب التصميم', cms: 'نظام إدارة المحتوى', hosting_needed: 'يحتاج استضافة',
+  domain_needed: 'يحتاج اسم نطاق', content_provided: 'المحتوى متوفر من العميل',
+  tech_stack: 'التقنيات المطلوبة', target_url: 'الرابط المستهدف', scope: 'نطاق العمل',
+  channels: 'قنوات التسويق', ad_budget: 'ميزانية الإعلانات', ad_types: 'أنواع الإعلانات',
+  target_audience: 'الجمهور المستهدف', keywords: 'الكلمات المفتاحية', competitors: 'المنافسون',
+  platforms: 'المنصات', industry: 'المجال', company_name: 'اسم الشركة/المشروع',
+  website_url: 'رابط الموقع', num_employees: 'عدد الموظفين', compliance_requirements: 'متطلبات الامتثال',
+  budget_range: 'نطاق الميزانية', urgency: 'مدى الأولوية', additional_notes: 'ملاحظات إضافية',
+  reference_links: 'روابط مرجعية', preferred_colors: 'الألوان المفضلة', languages: 'اللغات المطلوبة',
+};
+
+function prettifyKey(k) {
+  if (FIELD_LABELS[k]) return FIELD_LABELS[k];
+  return k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatFieldValue(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (typeof v === 'boolean') return v ? 'نعم' : 'لا';
+  if (Array.isArray(v)) {
+    if (!v.length) return null;
+    return v.map(x => `<span class="pj-tag">${escapeHtml(String(x))}</span>`).join(' ');
+  }
+  if (typeof v === 'object') {
+    const entries = Object.entries(v).filter(([,val]) => val !== null && val !== undefined && val !== '');
+    if (!entries.length) return null;
+    return entries.map(([k, val]) => `<span class="pj-tag">${escapeHtml(prettifyKey(k))}: ${escapeHtml(String(val))}</span>`).join(' ');
+  }
+  return escapeHtml(String(v));
+}
+
+function normalizeAttachments(raw) {
+  if (!raw) return [];
+  let items = raw;
+  if (typeof items === 'string') {
+    try { items = JSON.parse(raw); } catch { items = [raw]; }
+  }
+  if (!Array.isArray(items)) return [];
+  return items.map(item => {
+    if (!item) return null;
+    if (typeof item === 'string') {
+      const url = item;
+      const isImage = /\.(jpe?g|png|gif|webp|svg)$/i.test(url);
+      return { url, name: url.split('/').pop(), type: isImage ? 'image' : 'file' };
+    }
+    const url = item.file_url || item.url || item.path || item.src;
+    if (!url) return null;
+    const name = item.file_name || item.name || url.split('/').pop();
+    const mime = item.file_type || item.type || '';
+    const type = mime.startsWith('image/') || /\.(jpe?g|png|gif|webp|svg)$/i.test(url) ? 'image' : 'file';
+    return { url, name, type };
+  }).filter(Boolean);
+}
+
+function renderAttachmentGallery(attachments) {
+  if (!attachments.length) return '';
+  const images = attachments.filter(att => att.type === 'image');
+  const docs = attachments.filter(att => att.type !== 'image');
+  const imagesHtml = images.length ? `
+    <div class="pd-section-title">صور المرفقات</div>
+    <div class="proj-image-gallery">
+      ${images.map(att => `
+        <a class="proj-image-item" href="${escapeHtml(att.url)}" target="_blank" rel="noreferrer noopener">
+          <img src="${escapeHtml(att.url)}" alt="${escapeHtml(att.name)}">
+        </a>`).join('')}
+    </div>` : '';
+  const docsHtml = docs.length ? `
+    <div class="proj-attachments-docs">
+      <p class="attachment-label">مرفقات أخرى</p>
+      ${docs.map(att => `<a class="attachment-link" href="${escapeHtml(att.url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(att.name)}</a>`).join('')}
+    </div>` : '';
+  return imagesHtml + docsHtml;
+}
+
+function renderClientSubmittedInfo(p) {
+  const fd = parseFormData(p);
+  const keys = Object.keys(fd);
+  if (!keys.length) return '';
+  const rows = keys.map(k => {
+    const val = formatFieldValue(fd[k]);
+    if (val === null) return '';
+    const isTagList = Array.isArray(fd[k]) || (typeof fd[k] === 'object' && fd[k] !== null);
+    return `
+      <div class="pd-info-box" style="grid-column: ${isTagList ? '1 / -1' : 'auto'};">
+        <div class="k">${escapeHtml(prettifyKey(k))}</div>
+        <div class="v" style="${isTagList ? 'display:flex;flex-wrap:wrap;gap:6px;font-weight:600;' : ''}">${val}</div>
+      </div>`;
+  }).join('');
+  if (!rows.trim()) return '';
+  return `<p class="pd-section-title">معلومات الطلب</p><div class="pd-grid" style="grid-template-columns:1fr 1fr;">${rows}</div>`;
+}
+
+function computeSummary(list) {
+  const total = list.length;
+  const active = list.filter(p => p.status === 'pending' || p.status === 'in_progress').length;
+  const done = list.filter(p => p.status === 'completed').length;
+  const budget = list.reduce((acc, p) => acc + (Number(p.budget) || 0), 0);
+
+  document.querySelectorAll('.pj-sum-card').forEach(c => c.classList.remove('loading'));
+  document.getElementById('sumTotalNum').textContent = total;
+  document.getElementById('sumActiveNum').textContent = active;
+  document.getElementById('sumDoneNum').textContent = done;
+  document.getElementById('sumBudgetNum').textContent = budget.toLocaleString('ar-DZ');
+}
+
+function cardTemplate(p) {
+  const meta = getDomainMeta(p);
+  const s = STATUS_MAP[p.status] || { label: p.status, cls: 'pjs-pending' };
+  const pct = p.progress ?? 0;
+  const endDate = p.end_date ? new Date(p.end_date) : null;
+  const isLate = endDate && endDate < new Date() && p.status !== 'completed';
+  const dateStr = endDate ? endDate.toLocaleDateString('ar-DZ', { year:'numeric', month:'short', day:'numeric' }) : '—';
+  const ringColor = isLate ? 'var(--danger)' : meta.ring;
+  const color = getProgressColor(pct, isLate);
+  const tags = getDomainTags(p);
+
+  const completedActions = p.status === 'completed' ? `
+        <button class="pj-action pj-action-invoice" data-action="invoice" data-id="${p.id}" title="عرض الفاتورة">عرض الفاتورة</button>
+        <button class="pj-action pj-action-payment" data-action="pay" data-id="${p.id}" title="تكملة الدفع">دفع متبقي</button>
+        <button class="pj-action pj-action-deliver" data-action="deliver" data-id="${p.id}" title="استلام المشروع">استلام المشروع</button>
+      ` : '';
+
+  return `
+    <article class="pj-card ${p.status === 'completed' ? 'pj-card-completed' : ''}" data-id="${p.id}" data-status="${p.status}" data-title="${escapeHtml((p.title||'') + ' ' + (p.service_name||'')).toLowerCase()}">
+      <div class="pj-card-bar" style="background:${meta.gradient};"></div>
+      <div class="pj-card-body">
+        <div class="pj-card-top">
+          <div class="pj-card-id">
+            <div class="pj-card-ico" style="background:${meta.gradient};">${meta.icon}</div>
+            <div style="min-width:0;">
+              <h3 class="pj-card-title">${escapeHtml(p.title || '—')}</h3>
+              <p class="pj-card-service">${escapeHtml(p.service_name || '')}</p>
+            </div>
+          </div>
+          <div class="pj-ring" style="background:conic-gradient(${ringColor} ${pct}%, var(--line) 0);">
+            <div class="pj-ring-inner" style="color:${color};">${pct}%</div>
+          </div>
+        </div>
+
+        <span class="pj-status-badge ${s.cls}"><span class="sdot"></span>${s.label}</span>
+        <p class="pj-card-desc">${escapeHtml(p.description || 'لا يوجد وصف لهذا المشروع.')}</p>
+        ${tags ? `<div class="pj-tags">${tags}</div>` : ''}
+
+        <div class="pj-card-meta">
+          <div class="pj-meta-item"><span class="k">الميزانية</span><span class="v">${p.budget ? Number(p.budget).toLocaleString('ar-DZ') + ' دج' : '—'}</span></div>
+          <div class="pj-meta-item"><span class="k">الموعد</span><span class="v ${isLate ? 'late' : ''}">${dateStr}${isLate ? ' ⚠️' : ''}</span></div>
+        </div>
+      </div>
+      <div class="pj-card-footer">
+        <button class="pj-open" data-action="view" data-id="${p.id}">عرض التفاصيل</button>
+        ${completedActions}
+      </div>
+    </article>`;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('pjGrid');
+  let list = allProjects;
+  if (activeFilter !== 'all') list = list.filter(p => p.status === activeFilter);
+  if (searchTerm) list = list.filter(p => (p.title || '').toLowerCase().includes(searchTerm) || (p.service_name || '').toLowerCase().includes(searchTerm));
+
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="pj-empty">
+        <div class="ico">📁</div>
+        <h3>لا توجد مشاريع مطابقة</h3>
+        <p>${allProjects.length ? 'جرّب تغيير عوامل التصفية أو كلمة البحث.' : 'يظهر المشروع بعد تسجيل طلب خدمة جديد، وسيتم عرضه هنا بشكل أنيق ومرتب.'}</p>
+        <a class="pj-btn primary" href="new-service.html">+ طلب خدمة جديدة</a>
+      </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(cardTemplate).join('');
+
+  grid.querySelectorAll('button[data-action]').forEach(b => {
+    const action = b.dataset.action;
+    const projectId = b.dataset.id;
+    if (action === 'view') {
+      b.addEventListener('click', () => showProjectDetails(projectId));
+    } else if (action === 'invoice') {
+      b.addEventListener('click', () => showProjectInvoice(projectId));
+    } else if (action === 'pay') {
+      b.addEventListener('click', () => handleProjectPayment(projectId));
+    } else if (action === 'deliver') {
+      b.addEventListener('click', () => handleProjectDelivery(projectId));
+    }
+  });
+}
+
+async function showProjectInvoice(projectId) {
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/dashboard/invoices`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) throw new Error('تعذّر جلب بيانات الفاتورة');
+    const body = await r.json();
+    const invoice = (body.data || []).find(inv => String(inv.id) === String(projectId));
+    if (!invoice) return toast('لا توجد فاتورة لهذا المشروع', false);
+    const invoiceText = `رقم المشروع: ${invoice.id}\nالخدمة: ${invoice.service_name || invoice.title}\nالمبلغ: ${invoice.amount ? Number(invoice.amount).toLocaleString('ar-DZ') + ' دج' : '—'}\nالحالة: ${invoice.payment_status || 'غير متوفرة'}\nتاريخ الفاتورة: ${invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString('ar-DZ') : '—'}`;
+    alert(invoiceText);
+  } catch (err) {
+    console.error('showProjectInvoice', err);
+    toast(err.message || 'فشل عرض الفاتورة', false);
+  }
+}
+
+function handleProjectPayment(projectId) {
+  toast('لإتمام الدفع، الرجاء زيارة صفحة الفواتير أو التواصل مع فريق الدعم', true);
+}
+
+function handleProjectDelivery(projectId) {
+  toast('طلب استلام المشروع تم إرساله. سنتواصل معك للتأكيد.', true);
+}
+
+async function loadProjects() {
+  const grid = document.getElementById('pjGrid');
+  grid.innerHTML = '<div class="pj-skel-card"></div><div class="pj-skel-card"></div><div class="pj-skel-card"></div>';
+  document.querySelectorAll('.pj-sum-card').forEach(c => c.classList.add('loading'));
+
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/projects/client/list`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) {
+      if (r.status === 401) { toast('انتهت الجلسة، سجّل الدخول مجدداً', false); setTimeout(() => window.location.href = 'login.html', 1200); return; }
+      throw new Error('خطأ في جلب المشاريع');
+    }
+    const body = await r.json().catch(() => ({}));
+    allProjects = body.data || [];
+    computeSummary(allProjects);
+    renderGrid();
+  } catch (err) {
+    console.error('loadProjects', err);
+    document.querySelectorAll('.pj-sum-card').forEach(c => c.classList.remove('loading'));
+    grid.innerHTML = `
+      <div class="pj-empty">
+        <div class="ico">⚠️</div>
+        <h3>تعذّر تحميل المشاريع</h3>
+        <p>${err.message || 'تحقق من اتصالك وحاول مجدداً.'}</p>
+        <button class="pj-btn primary" onclick="loadProjects()">🔄 إعادة المحاولة</button>
+      </div>`;
+    toast(err.message || 'تعذّر تحميل المشاريع', false);
+  }
+}
+
+/* filters + search */
+document.getElementById('pjFilters').addEventListener('click', (e) => {
+  const chip = e.target.closest('.pj-filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.pj-filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeFilter = chip.dataset.filter;
+  renderGrid();
+});
+document.getElementById('pjSearch').addEventListener('input', (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderGrid();
+});
+document.getElementById('btnRefreshProjects').addEventListener('click', loadProjects);
+
+/* ══════════════════════════════════
+   PROJECT DETAILS MODAL
+══════════════════════════════════ */
+async function showProjectDetails(id) {
+  const cached = allProjects.find(p => String(p.id) === String(id));
+  openDetailsModal(cached, true);
+
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) {
+      if (r.status === 403) { toast('غير مسموح بالوصول لهذا المشروع', false); closeDetailsModal(); return; }
+      throw new Error('خطأ في جلب تفاصيل المشروع');
+    }
+    const body = await r.json().catch(() => ({}));
+    openDetailsModal(body.data || cached, false);
+  } catch (e) {
+    toast(e.message || 'فشل جلب التفاصيل', false);
+  }
+}
+
+function openDetailsModal(p, loading) {
+  document.getElementById('pdOverlay')?.remove();
+  if (!p) return;
+
+  const meta = getDomainMeta(p);
+  const s = STATUS_MAP[p.status] || { label: p.status, cls: 'pjs-pending' };
+  const pct = p.progress ?? 0;
+  const endDate = p.end_date ? new Date(p.end_date) : null;
+  const isLate = endDate && endDate < new Date() && p.status !== 'completed';
+  const color = getProgressColor(pct, isLate);
+  const fullInfo = renderClientSubmittedInfo(p);
+  const attachments = normalizeAttachments(p.attachments);
+  const attachmentHtml = renderAttachmentGallery(attachments);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'pdOverlay';
+  overlay.className = 'pd-overlay open';
+  overlay.innerHTML = `
+    <div class="pd-modal" role="dialog" aria-modal="true">
+      <div class="pd-header">
+        <div class="pd-header-left">
+          <div class="pd-header-ico" style="background:${meta.gradient};">${meta.icon}</div>
+          <div style="min-width:0;">
+            <h3>${escapeHtml(p.title || '—')}</h3>
+            <p>${escapeHtml(p.service_name || '')}</p>
+          </div>
+        </div>
+        <button class="pd-close" id="pdClose">✕</button>
+      </div>
+      <div class="pd-body">
+        ${loading ? `<p style="color:var(--muted);font-size:0.85rem;">جارٍ تحميل أحدث التفاصيل...</p>` : ''}
+        <div class="pd-progress-row">
+          <div class="pd-progress-bar"><div class="pd-progress-fill" style="width:${pct}%;background:${color};"></div></div>
+          <div class="pd-progress-num" style="color:${color};">${pct}%</div>
+        </div>
+        <div class="pd-grid">
+          <div class="pd-info-box"><div class="k">الحالة</div><div class="v"><span class="pj-status-badge ${s.cls}" style="margin:0;"><span class="sdot"></span>${s.label}</span></div></div>
+          <div class="pd-info-box"><div class="k">الميزانية</div><div class="v">${p.budget ? Number(p.budget).toLocaleString('ar-DZ') + ' دج' : '—'}</div></div>
+          <div class="pd-info-box"><div class="k">تاريخ الانتهاء</div><div class="v" style="${isLate ? 'color:var(--danger);' : ''}">${endDate ? endDate.toLocaleDateString('ar-DZ') : '—'}${isLate ? ' ⚠️' : ''}</div></div>
+          <div class="pd-info-box"><div class="k">مدة المشروع</div><div class="v">${p.timeline_days ? p.timeline_days + ' يوم' : '—'}</div></div>
+        </div>
+        <div class="pd-grid">
+          <div class="pd-info-box"><div class="k">العميل</div><div class="v">${escapeHtml(p.client_name || '—')}</div></div>
+          <div class="pd-info-box"><div class="k">البريد الإلكتروني</div><div class="v">${escapeHtml(p.client_email || '—')}</div></div>
+          ${p.priority ? `<div class="pd-info-box"><div class="k">الأولوية</div><div class="v">${escapeHtml(prettifyKey(p.priority))}</div></div>` : ''}
+        </div>
+        <p class="pd-section-title">الوصف</p>
+        <div class="pd-desc-box">${escapeHtml(p.description || 'لا يوجد وصف لهذا المشروع.')}</div>
+        ${p.notes ? `<p class="pd-section-title">ملاحظات</p><div class="pd-desc-box">${escapeHtml(p.notes)}</div>` : ''}
+        ${attachmentHtml}
+        ${fullInfo}
+        <p class="pd-section-title" style="margin-top:18px;">أُنشئ في</p>
+        <div class="pd-desc-box" style="margin-bottom:0;">${p.created_at ? new Date(p.created_at).toLocaleString('ar-DZ') : '—'}</div>
+      </div>
+      <div class="pd-footer">
+        <button class="pd-btn primary" id="pdCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDetailsModal(); });
+  document.getElementById('pdClose').addEventListener('click', closeDetailsModal);
+  document.getElementById('pdCloseBtn').addEventListener('click', closeDetailsModal);
+}
+
+function closeDetailsModal() {
+  const overlay = document.getElementById('pdOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  setTimeout(() => overlay.remove(), 200);
+}
+
+loadProjects();
+</script>
+</body>
+</html>

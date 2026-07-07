@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المحادثات - MEDS Digital Services</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/chats.css">
+</head>
+<body>
+  <div class="chat-shell">
+    <aside class="chat-list-panel">
+      <header class="panel-header">
+        <div>
+          <span class="eyebrow">MEDS</span>
+          <h1>المحادثات</h1>
+        </div>
+        <div class="panel-actions">
+          <button class="icon-btn" id="refreshChats" type="button" title="تحديث">↻</button>
+          <button class="icon-btn" id="deleteAllChats" type="button" title="حذف جميع المحادثات">🗑️</button>
+        </div>
+      </header>
+
+      <label class="search-wrap">
+        <span>⌕</span>
+        <input id="searchInput" type="search" placeholder="ابحث في المحادثات">
+      </label>
+
+      <div class="chat-list" id="chatsList"></div>
+    </aside>
+
+    <main class="chat-room">
+      <header class="room-header">
+        <button class="icon-btn mobile-only" id="toggleChats" type="button" title="القائمة">☰</button>
+        
+        <div class="room-title">
+          <span id="roomBadge" class="room-badge">خدمة</span>
+          <h2 id="chatTitle">اختر محادثة</h2>
+          <p id="chatSubtitle">تظهر هنا محادثات المشاريع بين العميل، مدير الخدمة، والمدير الرئيسي.</p>
+        </div>
+        <div class="room-actions">
+          <button class="icon-btn" id="actionMenuBtn" type="button" title="المزيد" aria-expanded="false">⋮</button>
+          <button class="icon-btn" id="backDashboard" type="button" title="العودة للوحة التحكم">⌂</button>
+          <div class="action-menu" id="actionMenu" aria-hidden="true">
+            <button class="menu-item" id="toggleInfo" type="button" title="المشاركون">
+              <span class="menu-icon">ⓘ</span>
+              <span>المشاركون</span>
+            </button>
+            <button class="menu-item" id="deleteCurrentChat" type="button" title="مسح المحتوى المحلي">
+              <span class="menu-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 3h6l1 1h4v2H4V4h4l1-1z" fill="currentColor" opacity="0.9"/>
+                  <path d="M6 7h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7z" stroke="currentColor" stroke-width="0" fill="currentColor" opacity="0.95"/>
+                </svg>
+              </span>
+              <span>مسح المحتوى</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section class="messages" id="messagesContainer">
+        <div class="empty-state">
+          <strong>لا توجد محادثة محددة</strong>
+          <span>اختر محادثة مشروع من القائمة للمتابعة.</span>
+        </div>
+      </section>
+
+      <form class="composer" id="messageForm">
+        <div class="composer-input">
+          <textarea id="messageInput" rows="1" placeholder="اكتب رسالة..." disabled></textarea>
+          <div class="composer-actions">
+            <button id="recordAudioBtn" class="audio-record-btn" type="button" title="تسجيل صوتي">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zm5 9a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zm-5 9a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-2v2h-4v-2h4z" />
+              </svg>
+            </button>
+            <label class="file-upload" for="fileInput">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.35 10.04A7.49 7.49 0 0 0 5.5 9 6.5 6.5 0 0 0 6.5 22h12a4.5 4.5 0 0 0 .85-8.96zM16 13h-3V8h-2v5H8l4 4 4-4z" />
+              </svg>
+              <input id="fileInput" type="file" name="files" accept="audio/*,image/*" multiple hidden>
+            </label>
+          </div>
+          <div id="selectedFiles" class="selected-files" aria-live="polite"></div>
+        </div>
+        <button id="btnSend" class="send-button" type="submit" disabled aria-label="إرسال">
+          <span class="send-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3.4 20.6l18.2-8.5c.8-.4.8-1.5 0-1.9L3.4 2.6c-.7-.3-1.4.3-1.4 1.1v6.8c0 .8.6 1.5 1.4 1.6l11.5 1.5-11.5 1.5c-.8.1-1.4.8-1.4 1.6v6.8c0 .8.7 1.4 1.4 1.1z" />
+            </svg>
+          </span>
+        </button>
+      </form>
+    </main>
+
+    <aside class="chat-info" id="chatInfoPanel">
+      <header class="panel-header compact">
+        <div>
+          <span class="eyebrow">الفريق</span>
+          <h2>المشاركون</h2>
+        </div>
+        <button class="icon-btn" id="closeInfo" type="button" title="إغلاق">×</button>
+      </header>
+      <div class="info-content" id="infoContent">
+        <div class="empty-state small">اختر محادثة لعرض المشاركين.</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/chats.js?v=20260625"></script>
+</body>
+</html>

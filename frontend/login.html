@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تسجيل الدخول | MEDS Digital Services</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="auth-layout">
+  <!-- ASIDE -->
+  <aside class="auth-aside">
+    <div class="auth-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+
+    <a class="brand" href="index.html" style="color:#fff;">
+      <span class="brand-mark">M</span>
+      <span>MEDS Digital Services</span>
+    </a>
+
+    <div>
+      <h1>ادخل إلى <span class="highlight">مساحة عملك</span> الرقمية.</h1>
+      <p>تابع مشاريعك، رسائلك، والمدفوعات من لوحة واحدة مصممة للاستخدام اليومي السريع.</p>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="padding:16px;background:rgba(255,255,255,0.07);border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:1.6rem;font-weight:900;color:#4ecdc4;">+250</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-top:2px;">عميل نشط</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.07);border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:1.6rem;font-weight:900;color:#60a5fa;">98%</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-top:2px;">نسبة الرضا</div>
+      </div>
+    </div>
+
+   
+  </aside>
+
+  <!-- FORM -->
+  <section class="auth-content">
+    <form class="auth-card" id="loginForm" novalidate>
+      <h2>مرحباً بعودتك 👋</h2>
+      <p class="sub">استخدم البريد الإلكتروني أو اسم المستخدم أو رقم الهاتف.</p>
+      <div class="message" id="formMessage" role="alert"></div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>بيانات الدخول</span>
+          <input type="text" id="identifier" name="identifier" autocomplete="username"
+                 placeholder="البريد / المستخدم / الهاتف" required>
+        </label>
+
+        <label class="field">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span>كلمة المرور</span>
+            <button type="button" id="togglePassword" class="btn btn-ghost"
+                    style="min-height:auto;padding:0;font-size:0.82rem;color:var(--primary-dark);">
+              إظهار
+            </button>
+          </div>
+          <input type="password" id="password" name="password" autocomplete="current-password"
+                 placeholder="��������" required>
+        </label>
+
+        <button class="btn btn-primary" type="submit" style="margin-top:4px;font-size:1rem;min-height:52px;">
+          <span id="btnText">دخول</span>
+          <span id="btnSpinner" style="display:none;">⟳</span>
+        </button>
+      </div>
+
+      <p class="form-footer">ليس لديك حساب؟ <a href="register.html">أنشئ حساباً جديداً</a></p>
+    </form>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script>
+/* Theme */
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+/* Toggle password */
+document.getElementById('togglePassword').addEventListener('click', function () {
+  const pw = document.getElementById('password');
+  const isText = pw.type === 'text';
+  pw.type = isText ? 'password' : 'text';
+  this.textContent = isText ? 'إظهار' : 'إخفاء';
+});
+
+/* Form submit */
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const msg = document.getElementById('formMessage');
+  const btn = document.querySelector('#loginForm .btn-primary');
+  const btnText = document.getElementById('btnText');
+  const spinner = document.getElementById('btnSpinner');
+
+  const identifier = document.getElementById('identifier').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!identifier || !password) {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'يرجى ملء جميع الحقول.';
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'جارٍ التحقق...';
+  spinner.style.display = 'inline';
+
+  try {
+    const apiBaseUrl = API_CONFIG.BASE;
+
+    const res = await fetch(`${apiBaseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      msg.className = 'message is-visible success';
+      msg.textContent = 'تم تسجيل الدخول بنجاح. جارٍ التوجيه...';
+      sessionStorage.setItem('token', data.token || '');
+      sessionStorage.setItem('user', JSON.stringify(data.user || {}));
+
+      const managerRoleIds = new Set([1, 2, 3, 4]);
+      const destination = managerRoleIds.has(Number(data.user?.role))
+        ? 'manager-dashboard.html'
+        : 'client-dashboard.html';
+
+      setTimeout(() => { window.location.href = destination; }, 900);
+    } else {
+      msg.className = 'message is-visible error';
+      msg.textContent = data.message || 'بيانات الدخول غير صحيحة.';
+    }
+  } catch {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'تعذّر الاتصال بالخادم. تأكد من تشغيل الـ API.';
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'دخول';
+    spinner.style.display = 'none';
+  }
+});
+</script>
+<script src="js/blobs.js"></script>
+</body>
+</html>

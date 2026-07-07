@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة تحكم الأدمن | MEDS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ══════ ADMIN DASHBOARD STYLES ══════ */
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0a7a6e;
+      --primary-glow: rgba(13,148,136,0.18);
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --surface-muted: #f7fafc;
+      --text: #0f1923;
+      --muted: #5a6b7a;
+      --line: #dde6ed;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --shadow-sm: 0 2px 8px rgba(15,25,35,0.07);
+      --shadow: 0 8px 32px rgba(15,25,35,0.10);
+    }
+
+    body.dark-mode {
+      --bg: #0c1620;
+      --surface: #162130;
+      --surface-muted: #1c2d3f;
+      --text: #eef4f9;
+      --muted: #7a9ab0;
+      --line: #253040;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* HEADER */
+    .admin-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-wrapper {
+      display: grid;
+      grid-template-columns: minmax(260px, auto) minmax(240px, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      font-size: 1.4rem;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .brand-text span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      justify-self: center;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface-muted);
+    }
+
+    .nav-btn,
+    .nav-link {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover, .nav-btn.active, .nav-link:hover {
+      background: var(--surface);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-link.strong {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 10px 20px rgba(13,148,136,0.18);
+    }
+
+    .nav-link.strong:hover {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .profile-menu-wrap {
+      position: relative;
+    }
+
+    .profile-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      min-width: 190px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: none;
+      z-index: 20;
+    }
+
+    .profile-menu-wrap.open .profile-menu {
+      display: grid;
+      gap: 6px;
+    }
+
+    .profile-menu button {
+      width: 100%;
+      min-height: 42px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      text-align: right;
+      padding: 8px 10px;
+      font-weight: 800;
+    }
+
+    .profile-menu button:hover {
+      background: rgba(13,148,136,0.1);
+      color: var(--primary-dark);
+    }
+
+    /* PROFILE MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2,6,23,0.6);
+      z-index: 120;
+      padding: 24px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      width: 100%;
+      max-width: 720px;
+      max-height: calc(100vh - 100px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal .modal-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:12px }
+    .modal .modal-body { display:grid;gap:12px;max-height: calc(100vh - 210px);overflow-y: auto;padding-right: 6px;}
+    .modal .modal-body::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    .modal .modal-body::-webkit-scrollbar-track {
+      background: rgba(13,148,136,0.08);
+      border-radius: 999px;
+    }
+    .modal .modal-body::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(13,148,136,0.95), rgba(13,148,136,0.7));
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+    .modal .modal-body::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(13,148,136,1), rgba(13,148,136,0.85));
+    }
+    .modal .modal-body { scrollbar-width: thin; scrollbar-color: rgba(13,148,136,0.85) rgba(13,148,136,0.08); }
+    .modal .modal-actions { display:flex;gap:8px;justify-content:flex-end;margin-top:12px }
+
+    .order-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 20px;
+      margin-bottom: 18px;
+    }
+
+    .order-detail-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-alt);
+    }
+
+    .order-detail-row strong {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .order-detail-row span {
+      color: var(--text);
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .order-detail-section {
+      margin-top: 16px;
+      padding: 14px 0;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .order-detail-section h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .attachment-list {
+      display: grid;
+      gap: 8px;
+      padding-left: 16px;
+      margin: 0;
+      list-style: disc inside;
+    }
+
+    .attachment-list a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .attachment-list a:hover {
+      text-decoration: underline;
+    }
+
+    .global-notice-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92%, 680px);
+      z-index: 130;
+      pointer-events: none;
+      display: grid;
+      gap: 10px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .global-notice {
+      width: 100%;
+      max-width: 680px;
+      pointer-events: auto;
+      border-radius: 14px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .global-notice.success {
+      background: rgba(22, 163, 74, 0.12);
+      color: var(--success);
+      border-color: rgba(22, 163, 74, 0.25);
+    }
+
+    .global-notice.error {
+      background: rgba(220, 38, 38, 0.12);
+      color: var(--danger);
+      border-color: rgba(220, 38, 38, 0.25);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+      justify-self: end;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-muted);
+      color: var(--text);
+    }
+
+    .badge-notif {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+    }
+
+    .page-strip {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .page-strip h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 900;
+    }
+
+    .page-strip p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .order-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .order-tab {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-muted);
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px 12px;
+      font-weight: 800;
+    }
+
+    .order-tab:hover,
+    .order-tab.active {
+      border-color: var(--primary);
+      background: rgba(13,148,136,0.1);
+      color: var(--primary-dark);
+    }
+
+    .order-tabs.order-tabs-inline {
+      margin: 16px 0 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* MAIN LAYOUT */
+    .admin-layout {
+      display: block;
+      min-height: calc(100vh - 74px);
+    }
+
+    /* CONTENT AREA */
+    .admin-content {
+      padding: 32px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .admin-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .stat-box:hover {
+      transform: translateY(-2px);
+      border-color: rgba(13,148,136,0.35);
+    }
+
+    .stat-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--primary-glow), transparent 70%);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+    }
+
+    .stat-icon.blue { background: rgba(59,130,246,0.1); }
+    .stat-icon.green { background: rgba(22,163,74,0.1); }
+    .stat-icon.orange { background: rgba(245,158,11,0.1); }
+    .stat-icon.purple { background: rgba(139,92,246,0.1); }
+
+    .stat-change {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .stat-change.positive {
+      background: rgba(22,163,74,0.1);
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      background: rgba(220,38,38,0.1);
+      color: var(--danger);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 0 0 4px;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 6px;
+    }
+
+    .dept-rating {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.72);
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .dept-rating span {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .manager-notice {
+      margin: 0 0 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      background: rgba(220, 38, 38, 0.08);
+      color: var(--danger);
+    }
+
+    .manager-notice.confirm {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--warning);
+    }
+
+    .manager-notice.success {
+      background: rgba(22, 163, 74, 0.12);
+      color: var(--success);
+    }
+
+    /* MAIN CONTENT GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .card-action {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface-muted);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+
+    .card-action:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    /* TABLE STYLES */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .data-table thead th {
+      padding: 12px;
+      text-align: right;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--surface-muted);
+      border-bottom: 2px solid var(--line);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .data-table th:nth-child(1) { width: 22%; }
+    .data-table th:nth-child(2) { width: 15%; }
+    .data-table th:nth-child(3) { width: 15%; }
+    .data-table th:nth-child(4) { width: 18%; }
+    .data-table th:nth-child(5) { width: 12%; }
+    .data-table th:nth-child(6) { width: 18%; }
+
+    .manager-data-table th:nth-child(1) { width: 24%; }
+    .manager-data-table th:nth-child(2) { width: 14%; }
+    .manager-data-table th:nth-child(3) { width: 14%; }
+    .manager-data-table th:nth-child(4) { width: 18%; }
+    .manager-data-table th:nth-child(5) { width: 12%; }
+    .manager-data-table th:nth-child(6) { width: 18%; }
+
+    .data-table tbody td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .data-table tbody tr:hover {
+      background: var(--surface-muted);
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .user-info strong {
+      display: block;
+      font-weight: 700;
+    }
+
+    .user-info span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* BADGES */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-active {
+      background: rgba(22,163,74,0.1);
+      color: var(--success);
+    }
+
+    .status-active::before {
+      background: var(--success);
+    }
+
+    .status-pending {
+      background: rgba(245,158,11,0.1);
+      color: var(--warning);
+    }
+
+    .status-pending::before {
+      background: var(--warning);
+    }
+
+    .status-inactive {
+      background: rgba(13,148,136,0.1);
+      color: var(--primary-dark);
+    }
+
+    .status-inactive::before {
+      background: var(--primary);
+    }
+
+    .department-filter {
+      display: none;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .department-filter.active {
+      display: grid;
+    }
+
+    .dept-filter-btn {
+      min-height: 54px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      transition: all 0.15s;
+    }
+
+    .dept-filter-btn:hover,
+    .dept-filter-btn.active {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      background: rgba(13,148,136,0.08);
+      transform: translateY(-1px);
+    }
+
+    .interactive-row {
+      cursor: pointer;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .inline-inputs {
+      display: grid;
+      gap: 10px;
+    }
+
+    .inline-inputs input,
+    .inline-inputs select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: inherit;
+      background: var(--surface-muted);
+      color: var(--text);
+    }
+
+    .inline-inputs input:focus,
+    .inline-inputs select:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .manager-edit-row {
+      background: rgba(13,148,136,0.04);
+    }
+
+    .manager-form-note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .manager-edit-row td {
+      vertical-align: middle;
+      padding: 14px 12px;
+    }
+
+    .manager-edit-row td > .inline-inputs,
+    .manager-edit-row td > .password-input-cell,
+    .manager-edit-row td > select {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .manager-edit-row td > .inline-inputs {
+      display: grid;
+      gap: 10px;
+    }
+
+    .password-input-cell {
+      display: block;
+      width: 100%;
+    }
+
+    .password-input-cell .password-input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: var(--surface-muted);
+      color: var(--text);
+      font: inherit;
+      box-sizing: border-box;
+    }
+
+    .password-input-cell .password-input:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .password-note {
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1.2;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .password-cell {
+      padding: 0;
+    }
+
+    .password-cell-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      min-height: 100%;
+      box-sizing: border-box;
+      padding: 0 2px;
+    }
+
+    .password-cell .password-mask {
+      color: var(--muted);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .password-cell button {
+      line-height: 1.4;
+      padding: 8px 10px;
+    }
+
+    .user-tools {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 180px 160px;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .user-tools input,
+    .user-tools select {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-muted);
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+      font: inherit;
+    }
+
+    .user-tools input:focus,
+    .user-tools select:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .users-section {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .users-section + .users-section {
+      margin-top: 28px;
+    }
+
+    .users-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .users-section-title h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .users-count {
+      min-width: 28px;
+      min-height: 28px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(13,148,136,0.1);
+      color: var(--primary-dark);
+      display: inline-grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 0.82rem;
+    }
+
+    .mini-action {
+      border: 1px solid var(--line);
+      background: var(--surface-muted);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.78rem;
+    }
+
+    .mini-action:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+    @media (max-width: 768px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      .header-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .header-nav,
+      .header-actions {
+        justify-content: stretch;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn,
+      .nav-link {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .admin-content {
+        padding: 16px;
+      }
+
+      .department-filter {
+        grid-template-columns: 1fr;
+      }
+
+      .user-tools {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ANIMATIONS */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stat-box, .card {
+      animation: slideUp 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="admin-header">
+    <div class="header-wrapper">
+      <div class="brand">
+        <div class="logo">M</div>
+        <div class="brand-text">
+          <h1>MEDS Digital Services</h1>
+          <span>لوحة تحكم المدير العام</span>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <button class="nav-btn active" type="button" onclick="setOrderFilter('all')">
+          <span>لوحة التحكم</span>
+        </button>
+        <button class="nav-btn" type="button" onclick="window.location.href='manager-invoices.html'">
+          <span>الفواتير</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="nav-link strong super-admin-only hidden" type="button" onclick="showUsersPanel()">إدارة المستخدمين</button>
+        <a class="nav-link" href="chats.html">الدردشة</a>
+        <button class="icon-btn" id="themeToggle" title="تبديل المظهر">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" title="الإشعارات">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="badge-notif"></span>
+        </button>
+        <div class="profile-menu-wrap" id="profileMenuWrap">
+          <button class="icon-btn" id="profileMenuBtn" title="الملف الشخصي">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          <div class="profile-menu" id="profileMenu">
+            <button type="button" onclick="showProfileNotice()">الملف الشخصي</button>
+            <button type="button" onclick="logoutUser()">تسجيل الخروج</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="globalNoticeContainer" class="global-notice-container" aria-live="polite"></div>
+
+  <!-- PROFILE MODAL -->
+  <div id="profileModalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" id="profileModal">
+      <div class="modal-header">
+        <h3 style="margin:0;font-size:1.1rem;font-weight:800">الملف الشخصي</h3>
+        <button class="mini-action" onclick="closeProfileModal()">إغلاق</button>
+      </div>
+      <div class="modal-body">
+        <label>الاسم الأول<input id="profile_first_name" type="text" placeholder="الاسم الأول" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)"></label>
+        <label>اسم العائلة<input id="profile_last_name" type="text" placeholder="اسم العائلة" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)"></label>
+        <label>البريد<input id="profile_email" type="email" placeholder="البريد الإلكتروني" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)"></label>
+        <label>الهاتف<input id="profile_phone" type="tel" placeholder="الهاتف" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)"></label>
+        <div style="display:grid;gap:8px">
+          <label>كلمة المرور الحالية
+            <input id="profile_current_password" type="password" placeholder="كلمة المرور الحالية" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)">
+          </label>
+          <label>كلمة المرور الجديدة
+            <input id="profile_new_password" type="password" placeholder="كلمة المرور الجديدة (6 أحرف على الأقل)" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)">
+          </label>
+          <label>تأكيد كلمة المرور الجديدة
+            <input id="profile_new_password_confirm" type="password" placeholder="أعد كتابة كلمة المرور الجديدة" style="width:100%;min-height:40px;padding:8px;border-radius:8px;border:1px solid var(--line)">
+          </label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="mini-action" onclick="closeProfileModal()">إلغاء</button>
+        <button class="mini-action" id="saveProfileBtn" onclick="submitProfileForm()">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="orderDetailsModalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" id="orderDetailsModal">
+      <div class="modal-header">
+        <h3 style="margin:0;font-size:1.1rem;font-weight:800">تفاصيل الطلب</h3>
+        <button class="mini-action" onclick="closeOrderDetailsModal()">إغلاق</button>
+      </div>
+      <div class="modal-body" id="orderDetailsContent">
+        <p>جاري تحميل بيانات الطلب...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <!-- MAIN CONTENT -->
+    <main class="admin-content">
+      <div class="admin-grid">
+        <div class="page-strip">
+          <div>
+            <h2>لوحة التحكم</h2>
+            <p>متابعة الطلبات، المحادثات، وإدارة المستخدمين من مساحة واحدة.</p>
+          </div>
+        </div>
+
+        <div class="department-filter" id="departmentFilter">
+          <button class="dept-filter-btn active" data-department="all">كل الأقسام</button>
+          <button class="dept-filter-btn" data-department="dev">البرمجة</button>
+          <button class="dept-filter-btn" data-department="mkt">التسويق</button>
+          <button class="dept-filter-btn" data-department="sec">الأمن السيبراني</button>
+        </div>
+
+        <!-- TODAY STATS ROW -->
+        <div class="stats-row today-stats">
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon blue">📦</div>
+              <span class="stat-change positive">اليوم</span>
+            </div>
+            <p class="stat-value" id="todayTotalOrders">—</p>
+            <p class="stat-label">طلبات اليوم</p>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon green">✅</div>
+              <span class="stat-change positive">اليوم</span>
+            </div>
+            <p class="stat-value" id="todayCompletedOrders">—</p>
+            <p class="stat-label">الطلبات المكتملة اليوم</p>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon orange">👥</div>
+              <span class="stat-change positive">اليوم</span>
+            </div>
+            <p class="stat-value" id="todayTotalClients">—</p>
+            <p class="stat-label">عملاء جدد اليوم</p>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon purple">⭐</div>
+              <span class="stat-change positive">اليوم</span>
+            </div>
+            <div class="stat-value" id="todayRatingsBox">
+              <div class="dept-rating"><span>البرمجة</span> <strong id="todayRatingDev">—</strong></div>
+              <div class="dept-rating"><span>التسويق</span> <strong id="todayRatingMkt">—</strong></div>
+              <div class="dept-rating"><span>الأمن</span> <strong id="todayRatingSec">—</strong></div>
+            </div>
+            <p class="stat-label">تقييم اليوم لكل قسم</p>
+          </div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon blue">📦</div>
+              <span class="stat-change positive" id="platformDays">—</span>
+            </div>
+            <p class="stat-value" id="totalOrders">1,284</p>
+            <p class="stat-label">إجمالي الطلبات</p>
+          </div>
+
+            <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon green">✅</div>
+              <span class="stat-change positive" id="platformDaysCompleted">—</span>
+            </div>
+            <p class="stat-value" id="completedOrders">—</p>
+            <p class="stat-label">الطلبات المكتملة</p>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon orange">👥</div>
+              <span class="stat-change positive" id="platformDaysClients">—</span>
+            </div>
+            <p class="stat-value" id="totalClients">856</p>
+            <p class="stat-label">عدد العملاء المسجلين</p>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-header">
+              <div class="stat-icon purple">⭐</div>
+              <span class="stat-change positive" id="platformDaysRatings">—</span>
+            </div>
+            <div class="stat-value" id="avgRating">
+              <div class="dept-rating"><span>البرمجة</span> <strong id="ratingDev">—</strong></div>
+              <div class="dept-rating"><span>التسويق</span> <strong id="ratingMkt">—</strong></div>
+              <div class="dept-rating"><span>الأمن</span> <strong id="ratingSec">—</strong></div>
+            </div>
+            <p class="stat-label">تقييم الأقسام الثلاثة من 5</p>
+          </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="main-grid">
+          <!-- LEFT COLUMN -->
+          <div class="admin-grid">
+            <!-- RECENT ORDERS -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">أحدث الطلبات</h3>
+                <button class="card-action" onclick="setOrderFilter('all')">عرض الكل</button>
+              </div>
+              <div class="order-tabs order-tabs-inline" aria-label="فلترة الطلبات">
+                <button class="order-tab active" type="button" data-order-filter="all">كل الطلبات</button>
+                <button class="order-tab" type="button" data-order-filter="new">طلبات جديدة</button>
+                <button class="order-tab" type="button" data-order-filter="in_progress">قيد التنفيذ</button>
+                <button class="order-tab" type="button" data-order-filter="completed">طلبات مكتملة</button>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>رقم الطلب</th>
+                    <th>العميل</th>
+                    <th>الخدمة</th>
+                    <th>الحالة</th>
+                    <th class="financial-only">الأولوية</th>
+                    <th>إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTable">
+                  <tr>
+                    <td colspan="5" style="text-align:center;padding:24px;color:var(--muted);">جاري التحميل...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card hidden" id="userManagementCard">
+              <div class="card-header">
+                <h3 class="card-title">إدارة المستخدمين</h3>
+                <button class="card-action" onclick="loadUsers()">تحديث</button>
+              </div>
+              <div class="user-tools">
+                <input id="userSearchInput" type="search" placeholder="ابحث بالاسم أو البريد أو الهاتف">
+                <select id="userDepartmentFilter">
+                  <option value="all">كل الأقسام</option>
+                  <option value="dev">البرمجة</option>
+                  <option value="mkt">التسويق</option>
+                  <option value="sec">الأمن السيبراني</option>
+                </select>
+                <select id="userStatusFilter">
+                  <option value="all">كل الحالات</option>
+                  <option value="active">نشط</option>
+                  <option value="inactive">معطل</option>
+                </select>
+              </div>
+
+              <section class="users-section">
+                <div class="users-section-title">
+                  <h4>مسؤولو الأقسام</h4>
+                  <div>
+                    <button class="mini-action" id="addManagerBtn" type="button">إضافة مسؤول جديد</button>
+                    <span class="users-count" id="departmentManagersCount">0</span>
+                  </div>
+                </div>
+                <table class="data-table manager-data-table">
+                  <thead>
+                    <tr>
+                      <th>المسؤول</th>
+                      <th>الدور</th>
+                      <th>القسم</th>
+                      <th>كلمة السر</th>
+                      <th>الحالة</th>
+                      <th>إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody id="departmentManagersTable">
+                    <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="users-section">
+                <div class="users-section-title">
+                  <h4>المستخدمون العاديون</h4>
+                  <span class="users-count" id="regularUsersCount">0</span>
+                </div>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>المستخدم</th>
+                      <th>البريد/الهاتف</th>
+                      <th>المشاريع</th>
+                      <th>الحالة</th>
+                      <th>إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody id="regularUsersTable">
+                    <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted);">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    // ══════════════════════════════════════════════════════
+    // ADMIN DASHBOARD SCRIPT
+    // ══════════════════════════════════════════════════════
+
+    const API_BASE = API_CONFIG.BASE;
+    let authToken = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const currentUser = JSON.parse(sessionStorage.getItem('user') || localStorage.getItem('user') || '{}');
+    const isLocalSuperAdmin = Number(currentUser.role) === 1 || String(currentUser.role_name || '').toLowerCase() === 'admin';
+
+    // Check authentication
+    if (!authToken) {
+      window.location.href = 'login.html';
+    }
+
+    let dashboardState = {
+      selectedDepartment: 'all',
+      orderStatusFilter: 'all',
+      userSearch: '',
+      userDepartment: 'all',
+      userStatus: 'all',
+      users: [],
+      isSuperAdmin: false,
+      managerDomain: 'dev',
+      orders: [],
+      managerForm: {
+        mode: null,
+        userId: null,
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        password: '',
+        department: 'systems',
+        role: 'programmer',
+        is_active: true
+      }
+    };
+
+    const departmentLabels = {
+      all: 'كل الأقسام',
+      dev: 'البرمجة',
+      mkt: 'التسويق',
+      sec: 'الأمن السيبراني'
+    };
+
+    const ORDER_STATUS_OPTIONS = [
+      { value: 'pending', label: 'قيد المراجعة' },
+      { value: 'review', label: 'قيد المراجعة' },
+      { value: 'pending_payment', label: 'بانتظار الدفع' },
+      { value: 'in_progress', label: 'قيد التنفيذ' },
+      { value: 'waiting_client', label: 'بانتظار العميل' },
+      { value: 'on_hold', label: 'مؤجل' },
+      { value: 'delayed', label: 'متأخر' },
+      { value: 'completed', label: 'مكتمل' },
+      { value: 'cancelled', label: 'ملغي' }
+    ];
+
+    const departmentToCssName = {
+      dev: 'systems',
+      mkt: 'marketing',
+      sec: 'security'
+    };
+
+    const managerRoleNames = new Set(['admin', 'programmer', 'marketer', 'cyber_security_expert']);
+    const managerRoleByDepartment = {
+      systems: 'programmer',
+      marketing: 'marketer',
+      security: 'cyber_security_expert'
+    };
+
+    let userSearchTimer = null;
+
+    function apiHeaders() {
+      return {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function normalizeCount(value) {
+      return Number(value || 0).toLocaleString('ar-MA');
+    }
+
+    async function fetchJson(path, options = {}) {
+      const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          ...apiHeaders(),
+          ...(options.headers || {})
+        }
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      const errorText = payload.error || payload.message || 'تعذر تحميل البيانات';
+      if (response.status === 401 || response.status === 403) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = 'login.html';
+        }
+        throw new Error(payload.error || payload.message || 'غير مصرح');
+      }
+      if (!response.ok) throw new Error(errorText);
+      return payload.data || payload;
+    }
+
+    async function refreshDashboard() {
+      try {
+        const department = dashboardState.selectedDepartment || 'all';
+        const data = await fetchJson(`/manager/dashboard?department=${encodeURIComponent(department)}`);
+        dashboardState.isSuperAdmin = Boolean(data.scope?.isSuperAdmin || isLocalSuperAdmin);
+        dashboardState.managerDomain = data.scope?.managerDomain || data.scope?.selectedDomain || 'dev';
+        dashboardState.selectedDepartment = dashboardState.isSuperAdmin
+          ? (data.scope?.selectedDomain || department || 'all')
+          : (data.scope?.selectedDomain || data.scope?.managerDomain || 'dev');
+        dashboardState.orders = data.orders || [];
+
+        applyDashboardScope(data);
+        renderStats(data);
+        renderOrders(data.orders || []);
+        if (dashboardState.isSuperAdmin) {
+          await loadUsers().catch((error) => console.warn('Users panel skipped:', error.message));
+        }
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        document.getElementById('recentOrdersTable').innerHTML =
+          `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--danger);">${escapeHtml(error.message)}</td></tr>`;
+      }
+    }
+
+    function applyDashboardScope(data) {
+      const filter = document.getElementById('departmentFilter');
+      filter.classList.toggle('active', dashboardState.isSuperAdmin);
+      document.getElementById('userManagementCard').classList.toggle('hidden', !dashboardState.isSuperAdmin);
+      document.querySelectorAll('.financial-only').forEach((el) => {
+        el.classList.toggle('hidden', !dashboardState.isSuperAdmin);
+      });
+      document.querySelectorAll('.super-admin-only').forEach((el) => {
+        el.classList.toggle('hidden', !dashboardState.isSuperAdmin);
+      });
+
+      const title = dashboardState.isSuperAdmin
+        ? `لوحة تحكم المدير العام - ${departmentLabels[dashboardState.selectedDepartment] || 'كل الأقسام'}`
+        : `لوحة تحكم قسم ${departmentLabels[dashboardState.managerDomain] || ''}`;
+      document.querySelector('.brand-text span').textContent = title;
+
+      document.querySelectorAll('.dept-filter-btn').forEach((button) => {
+        button.classList.toggle('active', button.dataset.department === dashboardState.selectedDepartment);
+      });
+
+      document.querySelectorAll('[data-department-card]').forEach((card) => {
+        const domain = card.dataset.departmentCard;
+        if (dashboardState.selectedDepartment === 'all') {
+          card.style.display = '';
+        } else {
+          card.style.display = domain === dashboardState.selectedDepartment ? '' : 'none';
+        }
+      });
+
+      document.querySelectorAll('[data-order-filter]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.orderFilter === dashboardState.orderStatusFilter);
+      });
+    }
+
+    function renderStats(data) {
+      const summary = data.summary || {};
+      document.getElementById('todayTotalOrders').textContent = normalizeCount(summary.today_total || 0);
+      document.getElementById('todayCompletedOrders').textContent = normalizeCount(summary.today_completed || 0);
+      document.getElementById('todayTotalClients').textContent = normalizeCount(summary.today_totalClients || 0);
+      const todayRatings = summary.today_ratings_by_department || {};
+      document.getElementById('todayRatingDev').textContent = todayRatings.dev ? normalizeCount(todayRatings.dev) : '—';
+      document.getElementById('todayRatingMkt').textContent = todayRatings.mkt ? normalizeCount(todayRatings.mkt) : '—';
+      document.getElementById('todayRatingSec').textContent = todayRatings.sec ? normalizeCount(todayRatings.sec) : '—';
+
+      document.getElementById('totalOrders').textContent = normalizeCount(summary.total);
+      document.getElementById('completedOrders').textContent = normalizeCount(summary.completed);
+      document.getElementById('totalClients').textContent = normalizeCount(summary.totalClients);
+      const ratings = summary.ratings_by_department || {};
+      document.getElementById('ratingDev').textContent = ratings.dev ? normalizeCount(ratings.dev) : '—';
+      document.getElementById('ratingMkt').textContent = ratings.mkt ? normalizeCount(ratings.mkt) : '—';
+      document.getElementById('ratingSec').textContent = ratings.sec ? normalizeCount(ratings.sec) : '—';
+      document.getElementById('platformDays').textContent = `${normalizeCount(summary.platform_days || 0)} يومًا`;
+      document.getElementById('platformDaysCompleted').textContent = `${normalizeCount(summary.platform_days || 0)} يومًا`;
+      document.getElementById('platformDaysClients').textContent = `${normalizeCount(summary.platform_days || 0)} يومًا`;
+      document.getElementById('platformDaysRatings').textContent = `${normalizeCount(summary.platform_days || 0)} يومًا`;
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('recentOrdersTable');
+      const visibleOrders = filterOrdersByHeader(orders);
+      if (!visibleOrders.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">لا توجد طلبات في هذا النطاق</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = visibleOrders.slice(0, 12).map((order) => `
+        <tr class="interactive-row" data-order-id="${order.id}">
+          <td>#${order.id}</td>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">${escapeHtml((order.client_name || 'ع').charAt(0))}</div>
+              <div class="user-info">
+                <strong>${escapeHtml(order.client_name || 'عميل')}</strong>
+                <span>${escapeHtml(departmentLabels[order.domain] || order.domain || '')}</span>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(order.service_name || order.title || 'خدمة')}</td>
+          <td><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
+          ${dashboardState.isSuperAdmin ? `<td>${escapeHtml(order.priority || 'normal')}</td>` : ''}
+          <td>
+            <div class="row-actions">
+              <button class="mini-action" onclick="event.stopPropagation(); openOrderDetails(${order.id})">عرض التفاصيل</button>
+              <button class="mini-action" onclick="event.stopPropagation(); openProjectChat(${order.id})">محادثة</button>
+              <select class="mini-action" onchange="event.stopPropagation(); updateOrderStatus(${order.id}, this.value)">
+                ${ORDER_STATUS_OPTIONS.map((status) => `
+                  <option value="${status.value}" ${order.status === status.value ? 'selected' : ''}>${status.label}</option>
+                `).join('')}
+              </select>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getOrderDepartment(order) {
+      const domain = String(order.domain || order.department || '').toLowerCase();
+      if (['dev', 'development', 'systems', 'programming'].includes(domain)) return 'dev';
+      if (['mkt', 'marketing'].includes(domain)) return 'mkt';
+      if (['sec', 'security', 'cyber_security'].includes(domain)) return 'sec';
+      return domain || 'all';
+    }
+
+    function filterOrdersByHeader(orders) {
+      return (orders || []).filter((order) => {
+        if (dashboardState.selectedDepartment && dashboardState.selectedDepartment !== 'all') {
+          const orderDepartment = getOrderDepartment(order);
+          if (orderDepartment !== dashboardState.selectedDepartment) return false;
+        }
+
+        if (dashboardState.orderStatusFilter === 'new') {
+          return ['new', 'pending', 'review'].includes(order.status);
+        }
+        if (dashboardState.orderStatusFilter === 'in_progress') {
+          return order.status === 'in_progress';
+        }
+        if (dashboardState.orderStatusFilter === 'completed') {
+          return order.status === 'completed';
+        }
+        return true;
+      });
+    }
+
+    function setOrderFilter(filter) {
+      dashboardState.orderStatusFilter = filter;
+      document.querySelectorAll('[data-order-filter]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.orderFilter === filter);
+      });
+      renderOrders(dashboardState.orders || []);
+    }
+
+    async function loadUsers() {
+      if (!dashboardState.isSuperAdmin) return;
+      const department = dashboardState.userDepartment || dashboardState.selectedDepartment || 'all';
+      const query = new URLSearchParams({
+        department,
+        limit: '100'
+      });
+      if (dashboardState.userSearch) query.set('q', dashboardState.userSearch);
+
+      const data = await fetchJson(`/manager/users?${query.toString()}`);
+      dashboardState.users = data.users || [];
+      renderUserTables();
+    }
+
+    function getFilteredUsers() {
+      const status = dashboardState.userStatus;
+      return (dashboardState.users || []).filter((user) => {
+        if (status === 'active') return Boolean(user.is_active);
+        if (status === 'inactive') return !user.is_active;
+        return true;
+      });
+    }
+
+    function getUserName(user) {
+      return [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || user.email || 'مستخدم';
+    }
+
+    function getDepartmentLabelFromUser(user) {
+      const value = String(user.department || '').toLowerCase();
+      if (['systems', 'dev', 'programming'].includes(value)) return 'البرمجة';
+      if (['marketing', 'mkt'].includes(value)) return 'التسويق';
+      if (['security', 'sec', 'cyber_security'].includes(value)) return 'الأمن السيبراني';
+      return user.department || '-';
+    }
+
+    function getManagerRoleLabel(roleName) {
+      const value = String(roleName || '').toLowerCase();
+      if (value === 'programmer') return 'مبرمج';
+      if (value === 'marketer') return 'مسوق';
+      if (value === 'cyber_security_expert') return 'خبير أمن';
+      return roleName || '-';
+    }
+
+    function getRoleFromDepartment(department) {
+      return managerRoleByDepartment[String(department).toLowerCase()] || 'programmer';
+    }
+
+    function renderManagerRow(user) {
+      const name = getUserName(user);
+      const actionButtons = `
+        <button class="mini-action" onclick="event.stopPropagation(); openUserChat(${user.id})">تحدث</button>
+        <button class="mini-action" onclick="event.stopPropagation(); startEditManager(${user.id})">تعديل</button>
+        <button class="mini-action" onclick="event.stopPropagation(); deleteManager(${user.id})">حذف</button>
+      `;
+
+      const statusButton = `
+        <button class="mini-action" onclick="event.stopPropagation(); toggleUser(${user.id}, ${user.is_active ? 'false' : 'true'})">
+          ${user.is_active ? 'تعطيل' : 'تفعيل'}
+        </button>
+      `;
+
+      return `
+        <tr data-user-id="${user.id}" class="manager-row">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">${escapeHtml(name.charAt(0))}</div>
+              <div class="user-info">
+                <strong>${escapeHtml(name)}</strong>
+                <span>${escapeHtml(user.email || '')}</span>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(getManagerRoleLabel(user.role_name))}</td>
+          <td>${escapeHtml(getDepartmentLabelFromUser(user))}</td>
+          <td class="password-cell">
+            <div class="password-cell-content">
+              <span class="password-mask">********</span>
+              <button class="mini-action" onclick="event.stopPropagation(); promptManagerPasswordChange(${user.id})">تغيير</button>
+            </div>
+          </td>
+          <td><span class="status-badge ${user.is_active ? 'status-active' : 'status-inactive'}">${user.is_active ? 'نشط' : 'معطل'}</span></td>
+          <td>
+            <div class="row-actions">
+              ${statusButton}
+              ${actionButtons}
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderManagerFormRow() {
+      const form = dashboardState.managerForm;
+      return `
+        <tr class="manager-edit-row">
+          <td>
+            <div class="inline-inputs">
+              <input type="text" value="${escapeHtml(form.first_name)}" placeholder="الاسم الأول" onchange="window.updateManagerForm('first_name', this.value)">
+              <input type="text" value="${escapeHtml(form.last_name)}" placeholder="اسم العائلة" onchange="window.updateManagerForm('last_name', this.value)">
+              <input type="email" value="${escapeHtml(form.email)}" placeholder="البريد الإلكتروني" onchange="window.updateManagerForm('email', this.value)">
+              <input type="tel" value="${escapeHtml(form.phone)}" placeholder="الهاتف" onchange="window.updateManagerForm('phone', this.value)">
+            </div>
+          </td>
+          <td>
+            <select onchange="window.updateManagerForm('role', this.value)">
+              <option value="programmer" ${form.role === 'programmer' ? 'selected' : ''}>مبرمج</option>
+              <option value="marketer" ${form.role === 'marketer' ? 'selected' : ''}>مسوق</option>
+              <option value="cyber_security_expert" ${form.role === 'cyber_security_expert' ? 'selected' : ''}>خبير أمن</option>
+              <option value="admin" ${form.role === 'admin' ? 'selected' : ''}>admin</option>
+            </select>
+          </td>
+          <td>
+            <select onchange="window.updateManagerForm('department', this.value)">
+              <option value="systems" ${form.department === 'systems' ? 'selected' : ''}>البرمجة</option>
+              <option value="marketing" ${form.department === 'marketing' ? 'selected' : ''}>التسويق</option>
+              <option value="security" ${form.department === 'security' ? 'selected' : ''}>الأمن السيبراني</option>
+            </select>
+          </td>
+          <td>
+            <div class="password-input-cell">
+              <input class="password-input" type="password" value="${escapeHtml(form.password)}" placeholder="كلمة السر" onchange="window.updateManagerForm('password', this.value)">
+              ${form.mode === 'edit' ? '<small class="password-note">اتركه فارغًا إن لم يتغير</small>' : ''}
+            </div>
+          </td>
+          <td>
+            <select onchange="window.updateManagerForm('is_active', this.value === 'true')">
+              <option value="true" ${form.is_active ? 'selected' : ''}>نشط</option>
+              <option value="false" ${!form.is_active ? 'selected' : ''}>معطل</option>
+            </select>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="mini-action" onclick="event.stopPropagation(); submitManagerForm()">${form.mode === 'edit' ? 'حفظ' : 'إنشاء'}</button>
+              <button class="mini-action" onclick="event.stopPropagation(); cancelManagerForm()">إلغاء</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderRegularUserFormRow(user) {
+      const form = dashboardState.managerForm;
+      return `
+        <tr class="manager-edit-row">
+          <td>
+            <div class="inline-inputs">
+              <input type="text" value="${escapeHtml(form.first_name)}" placeholder="الاسم الأول" onchange="window.updateManagerForm('first_name', this.value)">
+              <input type="text" value="${escapeHtml(form.last_name)}" placeholder="اسم العائلة" onchange="window.updateManagerForm('last_name', this.value)">
+            </div>
+          </td>
+          <td>
+            <div class="inline-inputs">
+              <input type="email" value="${escapeHtml(form.email)}" placeholder="البريد الإلكتروني" onchange="window.updateManagerForm('email', this.value)">
+              <input type="tel" value="${escapeHtml(form.phone)}" placeholder="الهاتف" onchange="window.updateManagerForm('phone', this.value)">
+            </div>
+          </td>
+          <td>${normalizeCount(user.projects_count || 0)}</td>
+          <td>
+            <select onchange="window.updateManagerForm('is_active', this.value === 'true')">
+              <option value="true" ${form.is_active ? 'selected' : ''}>نشط</option>
+              <option value="false" ${!form.is_active ? 'selected' : ''}>معطل</option>
+            </select>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="mini-action" onclick="event.stopPropagation(); submitManagerForm()">حفظ</button>
+              <button class="mini-action" onclick="event.stopPropagation(); cancelManagerForm()">إلغاء</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderUserRows(users, type) {
+      if (!users.length) {
+        const colspan = type === 'manager' ? 6 : 5;
+        return `<tr><td colspan="${colspan}" style="text-align:center;padding:24px;color:var(--muted);">لا توجد نتائج مطابقة</td></tr>`;
+      }
+
+      return users.map((user) => {
+        if (type === 'regular' && dashboardState.managerForm.mode === 'edit' && dashboardState.managerForm.userId === user.id) {
+          return renderRegularUserFormRow(user);
+        }
+
+        const name = getUserName(user);
+        const actionButtons = `
+          <button class="mini-action" onclick="event.stopPropagation(); openUserChat(${user.id})">تحدث</button>
+          <button class="mini-action" onclick="event.stopPropagation(); startEditManager(${user.id})">تعديل</button>
+          <button class="mini-action" onclick="event.stopPropagation(); deleteManager(${user.id})">حذف</button>
+        `;
+
+        const statusButton = `
+          <button class="mini-action" onclick="event.stopPropagation(); toggleUser(${user.id}, ${user.is_active ? 'false' : 'true'})">
+            ${user.is_active ? 'تعطيل' : 'تفعيل'}
+          </button>
+        `;
+
+        if (type === 'manager') {
+          const passwordCell = `<td class="password-cell"><div class="password-cell-content"><span class="password-mask">********</span><button class="mini-action" onclick="event.stopPropagation(); promptManagerPasswordChange(${user.id})">تغيير</button></div></td>`;
+
+          return `
+            <tr data-user-id="${user.id}" class="manager-row">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar">${escapeHtml(name.charAt(0))}</div>
+                  <div class="user-info">
+                    <strong>${escapeHtml(name)}</strong>
+                    <span>${escapeHtml(user.email || '')}</span>
+                  </div>
+                </div>
+              </td>
+              <td>${escapeHtml(getManagerRoleLabel(user.role_name))}</td>
+              <td>${escapeHtml(getDepartmentLabelFromUser(user))}</td>
+              ${passwordCell}
+              <td><span class="status-badge ${user.is_active ? 'status-active' : 'status-inactive'}">${user.is_active ? 'نشط' : 'معطل'}</span></td>
+              <td>
+                <div class="row-actions">
+                  ${statusButton}
+                  ${actionButtons}
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+
+        return `
+        <tr data-user-id="${user.id}">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">${escapeHtml(name.charAt(0))}</div>
+              <div class="user-info">
+                <strong>${escapeHtml(name)}</strong>
+                <span>${escapeHtml(user.username || 'client')}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="user-info">
+              <strong>${escapeHtml(user.email || '')}</strong>
+              <span>${escapeHtml(user.phone || '')}</span>
+            </div>
+          </td>
+          <td>${normalizeCount(user.projects_count || 0)}</td>
+          <td><span class="status-badge ${user.is_active ? 'status-active' : 'status-inactive'}">${user.is_active ? 'نشط' : 'معطل'}</span></td>
+          <td>
+            <div class="row-actions">
+              ${statusButton}
+              ${actionButtons}
+            </div>
+          </td>
+        </tr>
+        `;
+      }).join('');
+    }
+
+    function renderDepartmentManagers(managers) {
+      const rows = [];
+      if (dashboardState.managerForm.mode === 'create') {
+        rows.push(renderManagerFormRow());
+      }
+      managers.forEach((user) => {
+        if (dashboardState.managerForm.mode === 'edit' && dashboardState.managerForm.userId === user.id) {
+          rows.push(renderManagerFormRow());
+        } else {
+          rows.push(renderManagerRow(user));
+        }
+      });
+      return rows.join('');
+    }
+
+    function renderUserTables() {
+      const users = getFilteredUsers();
+      const departmentManagers = users.filter((user) => managerRoleNames.has(String(user.role_name || '').toLowerCase()));
+      const regularUsers = users.filter((user) => String(user.role_name || '').toLowerCase() === 'client');
+
+      document.getElementById('departmentManagersCount').textContent = normalizeCount(departmentManagers.length);
+      document.getElementById('regularUsersCount').textContent = normalizeCount(regularUsers.length);
+      document.getElementById('departmentManagersTable').innerHTML = renderDepartmentManagers(departmentManagers);
+      document.getElementById('regularUsersTable').innerHTML = renderUserRows(regularUsers, 'regular');
+    }
+
+    async function toggleUser(userId, isActive) {
+      await fetchJson(`/manager/users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_active: isActive })
+      });
+      await loadUsers();
+    }
+
+    function startCreateManager() {
+      const defaultDepartment = 'systems';
+      dashboardState.managerForm = {
+        mode: 'create',
+        userId: null,
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        password: '',
+        department: defaultDepartment,
+        role: getRoleFromDepartment(defaultDepartment),
+        is_active: true
+      };
+      renderUserTables();
+    }
+
+    function startEditManager(userId) {
+      const user = dashboardState.users.find((item) => Number(item.id) === Number(userId));
+      if (!user) return;
+      dashboardState.managerForm = {
+        mode: 'edit',
+        userId: Number(user.id),
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        password: '',
+        department: String(user.department || 'systems').toLowerCase(),
+        role: String(user.role_name || getRoleFromDepartment(user.department)).toLowerCase(),
+        is_active: Boolean(user.is_active)
+      };
+      renderUserTables();
+    }
+
+    function cancelManagerForm() {
+      dashboardState.managerForm.mode = null;
+      dashboardState.managerForm.userId = null;
+      renderUserTables();
+    }
+
+    function updateManagerForm(field, value) {
+      if (field === 'is_active') {
+        dashboardState.managerForm[field] = value === true || value === 'true';
+      } else {
+        dashboardState.managerForm[field] = value;
+      }
+
+      if (field === 'department' && !dashboardState.managerForm.role) {
+        dashboardState.managerForm.role = getRoleFromDepartment(value);
+      }
+    }
+
+    function showInlineNotice(message, type = 'error') {
+      const existing = document.getElementById('managerNotice');
+      if (existing) existing.remove();
+
+      const notice = document.createElement('div');
+      notice.id = 'managerNotice';
+      notice.className = `manager-notice ${type}`;
+      notice.textContent = message;
+      const panel = document.getElementById('departmentManagersTable');
+      if (panel) {
+        panel.parentElement?.insertBefore(notice, panel);
+      }
+    }
+
+    function showGlobalNotice(message, type = 'error', duration = 4000) {
+      const container = document.getElementById('globalNoticeContainer');
+      if (!container) return;
+      const notice = document.createElement('div');
+      notice.className = `global-notice ${type}`;
+      notice.textContent = message;
+      container.appendChild(notice);
+      window.setTimeout(() => {
+        notice.remove();
+      }, duration);
+    }
+    function validateManagerForm(form) {
+      const firstName = String(form.first_name || '').trim();
+      const lastName = String(form.last_name || '').trim();
+      const email = String(form.email || '').trim();
+      const phone = String(form.phone || '').trim();
+
+      if (!firstName || !lastName) {
+        throw new Error('الاسم الأول والأخير مطلوبان');
+      }
+      if (/\d/.test(firstName) || /\d/.test(lastName)) {
+        throw new Error('لا يمكن أن يحتوي الاسم على أرقام');
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error('يرجى إدخال بريد إلكتروني صالح');
+      }
+      if (!/^\+?[0-9]{8,15}$/.test(phone)) {
+        throw new Error('يرجى إدخال رقم هاتف صحيح');
+      }
+      if (form.password && String(form.password).trim().length < 6) {
+        throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      }
+      return true;
+    }
+
+    function promptManagerPasswordChange(userId) {
+      const currentPassword = prompt('اكتب كلمة المرور الحالية للمسؤول لتأكيد التغيير');
+      if (!currentPassword) return;
+
+      const newPassword = prompt('اكتب كلمة المرور الجديدة للمدير');
+      if (!newPassword || newPassword.length < 6) {
+        showInlineNotice('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل');
+        return;
+      }
+
+      updateManagerPassword(userId, currentPassword, newPassword);
+    }
+
+    async function updateManagerPassword(userId, currentPassword, newPassword) {
+      try {
+        await fetchJson(`/manager/users/${userId}/change-password`, {
+          method: 'POST',
+          body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+        });
+        showGlobalNotice('تم تغيير كلمة المرور بنجاح', 'success');
+      } catch (error) {
+        showGlobalNotice(error.message || 'فشل تغيير كلمة المرور', 'error');
+      }
+    }
+
+    async function submitManagerForm() {
+      const form = dashboardState.managerForm;
+      try {
+        validateManagerForm(form);
+      } catch (error) {
+        showInlineNotice(error.message || 'البيانات غير صحيحة');
+        return;
+      }
+
+      const payload = {
+        first_name: form.first_name,
+        last_name: form.last_name,
+        email: form.email,
+        phone: form.phone,
+        department: form.department,
+        role: form.role,
+        is_active: form.is_active
+      };
+      if (form.password) {
+        payload.password = form.password;
+      }
+
+      try {
+        if (form.mode === 'create') {
+          await fetchJson('/manager/users', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+        } else if (form.mode === 'edit' && form.userId) {
+          await fetchJson(`/manager/users/${form.userId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload)
+          });
+        }
+        await loadUsers();
+        cancelManagerForm();
+      } catch (error) {
+        showInlineNotice(error.message || 'حدث خطأ أثناء حفظ البيانات');
+      }
+    }
+
+    function deleteManager(userId) {
+      const row = document.querySelector(`[data-user-id="${userId}"]`);
+      const table = row?.closest('table');
+      const notice = document.getElementById('managerNotice');
+      if (notice) notice.remove();
+
+      const confirmation = document.createElement('div');
+      confirmation.id = 'managerNotice';
+      confirmation.className = 'manager-notice confirm';
+      confirmation.innerHTML = `
+        <span>هل تريد حذف هذا المسؤول؟</span>
+        <div class="row-actions">
+          <button class="mini-action" onclick="window.confirmManagerDelete(${userId})">نعم</button>
+          <button class="mini-action" onclick="window.dismissManagerNotice()">إلغاء</button>
+        </div>
+      `;
+      if (table?.parentElement) {
+        table.parentElement.insertBefore(confirmation, table);
+      } else {
+        row?.parentElement?.insertBefore(confirmation, row);
+      }
+    }
+
+    window.confirmManagerDelete = async function(userId) {
+      try {
+        await fetchJson(`/manager/users/${userId}`, { method: 'DELETE' });
+        dashboardState.users = (dashboardState.users || []).filter((item) => Number(item.id) !== Number(userId));
+        document.getElementById('managerNotice')?.remove();
+        renderUserTables();
+        showInlineNotice('تم حذف المسؤول بنجاح', 'success');
+      } catch (error) {
+        showInlineNotice(error.message || 'تعذر حذف المسؤول');
+      }
+    };
+
+    window.dismissManagerNotice = function() {
+      document.getElementById('managerNotice')?.remove();
+    };
+
+    function showUsersPanel() {
+      if (!dashboardState.isSuperAdmin) return;
+      document.getElementById('userManagementCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function showInvoicesNotice() {
+      alert('قسم الفواتير سيعرض هنا عند ربط واجهة الفواتير.');
+    }
+
+    function showProfileNotice() {
+      document.getElementById('profileMenuWrap')?.classList.remove('open');
+      showProfileModal();
+    }
+
+    function logoutUser() {
+      document.getElementById('profileMenuWrap')?.classList.remove('open');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+
+    function showSettingsNotice() {
+      document.getElementById('profileMenuWrap')?.classList.remove('open');
+      alert('قسم الإعدادات جاهز للإضافة في هذه اللوحة.');
+    }
+
+    function setDepartment(department) {
+      if (!dashboardState.isSuperAdmin && department !== dashboardState.managerDomain) return;
+      dashboardState.selectedDepartment = department;
+      dashboardState.userDepartment = department;
+      const userDepartmentFilter = document.getElementById('userDepartmentFilter');
+      if (userDepartmentFilter) userDepartmentFilter.value = department;
+      refreshDashboard();
+    }
+
+    function showProfileModal() {
+      const backdrop = document.getElementById('profileModalBackdrop');
+      backdrop.classList.add('open');
+      backdrop.setAttribute('aria-hidden', 'false');
+      // populate with current user
+      const user = currentUser || {};
+      document.getElementById('profile_first_name').value = user.first_name || user.firstName || '';
+      document.getElementById('profile_last_name').value = user.last_name || user.lastName || '';
+      document.getElementById('profile_email').value = user.email || '';
+      document.getElementById('profile_phone').value = user.phone || user.mobile || '';
+    }
+
+    function closeProfileModal() {
+      const backdrop = document.getElementById('profileModalBackdrop');
+      backdrop.classList.remove('open');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    async function submitProfileForm() {
+      const btn = document.getElementById('saveProfileBtn');
+      btn.disabled = true;
+      try {
+        const payload = {
+          first_name: document.getElementById('profile_first_name').value.trim(),
+          last_name: document.getElementById('profile_last_name').value.trim(),
+          email: document.getElementById('profile_email').value.trim(),
+          phone: document.getElementById('profile_phone').value.trim()
+        };
+        // simple validation
+        if (!payload.first_name || !payload.last_name) throw new Error('الاسم الأول والأخير مطلوبان');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) throw new Error('بريد إلكتروني غير صالح');
+
+        const currentPass = document.getElementById('profile_current_password').value || '';
+        const newPass = document.getElementById('profile_new_password').value || '';
+        const newPassConfirm = document.getElementById('profile_new_password_confirm').value || '';
+
+        await fetchJson('/auth/profile', {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        });
+
+        if (newPass || newPassConfirm) {
+          if (!currentPass) throw new Error('يرجى كتابة كلمة المرور الحالية لتغييرها');
+          if (!newPass) throw new Error('يرجى كتابة كلمة المرور الجديدة');
+          if (newPass.length < 6) throw new Error('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل');
+          if (newPass !== newPassConfirm) throw new Error('تأكيد كلمة المرور لا يطابق');
+          await fetchJson('/auth/change-password', {
+            method: 'POST',
+            body: JSON.stringify({ old_password: currentPass, new_password: newPass })
+          });
+        }
+
+        // update local copy
+        currentUser.first_name = payload.first_name;
+        currentUser.last_name = payload.last_name;
+        currentUser.email = payload.email;
+        currentUser.phone = payload.phone;
+        sessionStorage.setItem('user', JSON.stringify(currentUser));
+
+        // clear password fields
+        document.getElementById('profile_current_password').value = '';
+        document.getElementById('profile_new_password').value = '';
+        document.getElementById('profile_new_password_confirm').value = '';
+
+        closeProfileModal();
+        showGlobalNotice('تم تحديث الملف الشخصي', 'success');
+      } catch (error) {
+        showGlobalNotice(error.message || 'تعذر حفظ الملف', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function promptChangeMyPassword() {
+      const current = prompt('اكتب كلمة المرور الحالية');
+      if (!current) return;
+      const next = prompt('اكتب كلمة المرور الجديدة (6 أحرف على الأقل)');
+      if (!next || next.length < 6) {
+        showGlobalNotice('كلمة المرور الجديدة قصيرة', 'error');
+        return;
+      }
+      const userId = currentUser && currentUser.id;
+      if (!userId) return showGlobalNotice('تعذر تحديد المستخدم', 'error');
+      updateManagerPassword(userId, current, next);
+    }
+
+    async function openProjectChat(projectId) {
+      const data = await fetchJson(`/chats/projects/${projectId}/start`, { method: 'POST' });
+      const chatId = data.chatId || data.id;
+      if (!chatId) {
+        throw new Error('تعذر فتح المحادثة');
+      }
+      window.location.href = `chats.html?project=${projectId}`;
+    }
+
+    async function openUserChat(userId) {
+      try {
+        const payload = { type: 'direct', participantIds: [Number(userId)] };
+        const data = await fetchJson('/chats', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const chatId = data.id || data.chatId || (data.data && data.data.id);
+        if (!chatId) throw new Error('تعذر إنشاء المحادثة');
+        window.location.href = `chats.html?chat=${chatId}&participant=${encodeURIComponent(userId)}`;
+      } catch (error) {
+        alert(error.message || 'تعذر بدء المحادثة');
+      }
+    }
+
+    async function quickAdvanceOrder(orderId) {
+      const order = dashboardState.orders.find((item) => Number(item.id) === Number(orderId));
+      const nextStatus = order?.status === 'in_progress' ? 'waiting_client' : 'in_progress';
+      await fetchJson(`/manager/orders/${orderId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: nextStatus })
+      });
+      await refreshDashboard();
+    }
+
+    async function updateOrderStatus(orderId, status) {
+      if (!status) return;
+      await fetchJson(`/manager/orders/${orderId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
+      await refreshDashboard();
+    }
+
+    async function openOrderDetails(orderId) {
+      try {
+        const order = await fetchJson(`/manager/orders/${orderId}`);
+        renderOrderDetails(order);
+        document.getElementById('orderDetailsModalBackdrop').classList.add('open');
+      } catch (error) {
+        showGlobalNotice(error.message || 'تعذر تحميل تفاصيل الطلب', 'error');
+      }
+    }
+
+    function closeOrderDetailsModal() {
+      const backdrop = document.getElementById('orderDetailsModalBackdrop');
+      if (backdrop) backdrop.classList.remove('open');
+    }
+
+    function formatOrderField(label, value) {
+      return `<div class="order-detail-row"><strong>${escapeHtml(label)}</strong><span>${escapeHtml(value || '-')}</span></div>`;
+    }
+
+    function parseJson(value) {
+      if (value === undefined || value === null || value === '') return null;
+      if (typeof value === 'object') return value;
+      try {
+        return JSON.parse(value);
+      } catch {
+        return null;
+      }
+    }
+
+    function renderOrderDetails(order) {
+      const content = document.getElementById('orderDetailsContent');
+      const attachments = Array.isArray(order.attachments) ? order.attachments : parseJson(order.attachments) || [];
+      const formData = parseJson(order.form_data);
+
+      const attachmentRows = attachments.length
+        ? attachments.map((attachment) => {
+            if (!attachment) return '';
+            const name = typeof attachment === 'string'
+              ? attachment.split('/').pop() || attachment
+              : attachment.name || attachment.file_name || attachment.title || 'ملف';
+            const url = typeof attachment === 'string'
+              ? attachment
+              : attachment.file_url || attachment.url || attachment.path || attachment.download_url || '#';
+            const sizeLabel = attachment && attachment.size ? ` <small>(${escapeHtml(String(attachment.size))})</small>` : '';
+            const safeHref = url && url !== '#' ? `href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"` : '';
+            return `<li>${safeHref ? `<a ${safeHref}>${escapeHtml(name)}</a>` : escapeHtml(name)}${sizeLabel}</li>`;
+          }).join('')
+        : '<li>لا يوجد مرفقات</li>';
+
+      const formDataRows = formData && typeof formData === 'object'
+        ? Object.entries(formData).map(([key, value]) => `
+            <div class="order-detail-row"><strong>${escapeHtml(key)}</strong><span>${escapeHtml(String(value || '-'))}</span></div>
+          `).join('')
+        : '';
+
+      content.innerHTML = `
+        <div class="order-details-grid">
+          ${formatOrderField('رقم الطلب', `#${order.id}`)}
+          ${formatOrderField('اسم العميل', order.client_name)}
+          ${formatOrderField('البريد الإلكتروني', order.client_email)}
+          ${formatOrderField('الخدمة', order.service_name || order.title)}
+          ${formatOrderField('القسم', departmentLabels[order.domain] || order.domain)}
+          ${formatOrderField('الحالة', getStatusText(order.status))}
+          ${formatOrderField('الأولوية', order.priority || '-')}
+          ${formatOrderField('الميزانية', order.budget ? `${order.budget}` : '-')}
+          ${formatOrderField('نطاق الميزانية', order.budget_range || '-')}
+          ${formatOrderField('مدة التنفيذ', order.timeline_days ? `${order.timeline_days} يوم` : '-')}
+          ${formatOrderField('تاريخ الإنشاء', order.created_at || '-')}
+          ${formatOrderField('تاريخ الانتهاء المتوقع', order.end_date || '-')}
+        </div>
+        <div class="order-detail-section">
+          <h3>وصف الطلب</h3>
+          <p>${escapeHtml(order.description || '-')}</p>
+        </div>
+        ${formDataRows ? `<div class="order-detail-section"><h3>البيانات الإضافية</h3>${formDataRows}</div>` : ''}
+        ${order.notes ? `<div class="order-detail-section"><h3>ملاحظات المشرف</h3><p>${escapeHtml(order.notes)}</p></div>` : ''}
+        <div class="order-detail-section">
+          <h3>المرفقات</h3>
+          <ul class="attachment-list">${attachmentRows}</ul>
+        </div>
+      `;
+    }
+
+    function getStatusClass(status) {
+      const classes = {
+        'pending': 'status-pending',
+        'review': 'status-pending',
+        'pending_payment': 'status-pending',
+        'in_progress': 'status-active',
+        'waiting_client': 'status-pending',
+        'on_hold': 'status-inactive',
+        'delayed': 'status-inactive',
+        'completed': 'status-active',
+        'cancelled': 'status-inactive'
+      };
+      return classes[status] || 'status-pending';
+    }
+
+    function getStatusText(status) {
+      const texts = {
+        'pending': 'قيد المراجعة',
+        'review': 'قيد المراجعة',
+        'pending_payment': 'بانتظار الدفع',
+        'in_progress': 'قيد التنفيذ',
+        'waiting_client': 'بانتظار العميل',
+        'on_hold': 'مؤجل',
+        'delayed': 'متأخر',
+        'completed': 'مكتمل',
+        'cancelled': 'ملغي'
+      };
+      return texts[status] || status;
+    }
+
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshDashboard();
+
+      // Load theme
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+
+      document.getElementById('addManagerBtn')?.addEventListener('click', startCreateManager);
+
+      // Refresh data every 30 seconds
+      setInterval(refreshDashboard, 30000);
+
+      // Socket.IO real-time updates
+      if (typeof io !== 'undefined') {
+        const socket = io(API_CONFIG.SOCKET_URL, {
+          auth: { token: authToken }
+        });
+
+        socket.on('order:created', () => {
+          refreshDashboard();
+        });
+
+        socket.on('stats:updated', () => {
+          refreshDashboard();
+        });
+      }
+    });
+
+    document.querySelectorAll('.dept-filter-btn').forEach((button) => {
+      button.addEventListener('click', () => setDepartment(button.dataset.department));
+    });
+
+    document.querySelectorAll('[data-order-filter]').forEach((button) => {
+      button.addEventListener('click', () => setOrderFilter(button.dataset.orderFilter));
+    });
+
+    document.getElementById('userSearchInput')?.addEventListener('input', (event) => {
+      dashboardState.userSearch = event.target.value.trim();
+      clearTimeout(userSearchTimer);
+      userSearchTimer = setTimeout(loadUsers, 250);
+    });
+
+    document.getElementById('userDepartmentFilter')?.addEventListener('change', (event) => {
+      dashboardState.userDepartment = event.target.value;
+      loadUsers();
+    });
+
+    document.getElementById('userStatusFilter')?.addEventListener('change', (event) => {
+      dashboardState.userStatus = event.target.value;
+      renderUserTables();
+    });
+
+    document.getElementById('profileMenuBtn')?.addEventListener('click', () => {
+      document.getElementById('profileMenuWrap')?.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (event) => {
+      const profileMenu = document.getElementById('profileMenuWrap');
+      if (profileMenu && !profileMenu.contains(event.target)) {
+        profileMenu.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>

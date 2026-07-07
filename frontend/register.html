@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>إنشاء حساب | MEDS Digital Services</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="auth-layout">
+  <!-- ASIDE -->
+  <aside class="auth-aside">
+    <div class="auth-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+
+    <a class="brand" href="index.html" style="color:#fff;">
+      <span class="brand-mark">M</span>
+      <span>MEDS Digital Services</span>
+    </a>
+
+    <div>
+      <h1>افتح حسابك وابدأ طلب <span class="highlight">الخدمات</span> باحتراف.</h1>
+      <p>سجّل بياناتك مرة واحدة، ثم تابع كل مشروع ورسالة ودفعة من لوحة عميل منظمة ومنظّمة.</p>
+    </div>
+
+    <!-- Steps -->
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);display:grid;place-items:center;font-weight:900;font-size:0.85rem;flex-shrink:0;">1</div>
+        <span style="color:rgba(255,255,255,0.75);font-size:0.9rem;">سجّل بياناتك الأساسية</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);display:grid;place-items:center;font-weight:900;font-size:0.85rem;flex-shrink:0;">2</div>
+        <span style="color:rgba(255,255,255,0.75);font-size:0.9rem;">فعّل حسابك عبر البريد</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(78,205,196,0.25);border:1px solid rgba(78,205,196,0.4);display:grid;place-items:center;font-weight:900;font-size:0.85rem;flex-shrink:0;color:#4ecdc4;">3</div>
+        <span style="color:rgba(255,255,255,0.75);font-size:0.9rem;">ابدأ طلب خدماتك فوراً</span>
+      </div>
+    </div>
+
+    <p class="note">بعد التسجيل ستصل رسالة تفعيل عند إعداد بيانات SMTP الحقيقية.</p>
+  </aside>
+
+  <!-- FORM -->
+  <section class="auth-content">
+    <form class="auth-card" id="registerForm" novalidate>
+      <h2>إنشاء حساب جديد</h2>
+      <p class="sub">أنشئ حسابك العميل خلال دقيقة واحدة.</p>
+      <div class="message" id="formMessage" role="alert"></div>
+
+      <div class="form-grid">
+        <div class="form-grid two-cols">
+          <label class="field">
+            <span>الاسم الأول</span>
+            <input name="first_name" autocomplete="given-name" placeholder="أحمد" required>
+          </label>
+          <label class="field">
+            <span>الاسم العائلي</span>
+            <input name="last_name" autocomplete="family-name" placeholder="العلوي" required>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>اسم المستخدم</span>
+          <input name="username" autocomplete="username" placeholder="ahmed_alawi" required>
+        </label>
+
+        <label class="field">
+          <span>البريد الإلكتروني</span>
+          <input name="email" type="email" autocomplete="email" placeholder="ahmed@example.com" required>
+        </label>
+
+        <label class="field">
+          <span>رقم الهاتف</span>
+          <input name="phone" type="tel" autocomplete="tel" placeholder="+213 XXX XXX XXX" required>
+        </label>
+
+        <div class="form-grid two-cols">
+          <label class="field">
+            <span>كلمة المرور</span>
+            <input name="password" id="pw1" type="password" autocomplete="new-password" minlength="6" placeholder="��������" required>
+          </label>
+          <label class="field">
+            <span>تأكيد كلمة المرور</span>
+            <input name="confirm_password" id="pw2" type="password" autocomplete="new-password" minlength="6" placeholder="��������" required>
+          </label>
+        </div>
+
+        <!-- Password strength -->
+        <div id="pwStrength" style="display:none;">
+          <div style="display:flex;gap:4px;margin-bottom:6px;" id="strengthBars">
+            <div style="height:4px;flex:1;border-radius:99px;background:var(--line);transition:background 0.3s;" id="bar1"></div>
+            <div style="height:4px;flex:1;border-radius:99px;background:var(--line);transition:background 0.3s;" id="bar2"></div>
+            <div style="height:4px;flex:1;border-radius:99px;background:var(--line);transition:background 0.3s;" id="bar3"></div>
+            <div style="height:4px;flex:1;border-radius:99px;background:var(--line);transition:background 0.3s;" id="bar4"></div>
+          </div>
+          <span style="font-size:0.8rem;color:var(--muted);" id="strengthText">قوة كلمة المرور</span>
+        </div>
+
+        <button class="btn btn-primary" type="submit" style="margin-top:4px;font-size:1rem;min-height:52px;">
+          <span id="btnText">إنشاء الحساب</span>
+        </button>
+      </div>
+
+      <p class="form-footer">لديك حساب؟ <a href="login.html">سجّل الدخول</a></p>
+    </form>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script>
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+/* Password strength */
+document.getElementById('pw1').addEventListener('input', function () {
+  const val = this.value;
+  const box = document.getElementById('pwStrength');
+  if (!val) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const colors = ['#ef4444','#f97316','#eab308','#22c55e'];
+  const labels = ['ضعيفة جداً','متوسطة','جيدة','قوية'];
+  const bars = ['bar1','bar2','bar3','bar4'];
+
+  bars.forEach((id, i) => {
+    document.getElementById(id).style.background = i < score ? colors[score - 1] : 'var(--line)';
+  });
+  document.getElementById('strengthText').textContent = labels[score - 1] || 'ضعيفة جداً';
+  document.getElementById('strengthText').style.color = colors[score - 1] || '#ef4444';
+});
+
+/* Form submit */
+document.getElementById('registerForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const msg = document.getElementById('formMessage');
+  const btn = document.querySelector('#registerForm .btn-primary');
+  const btnText = document.getElementById('btnText');
+
+  const fd = new FormData(this);
+  const data = Object.fromEntries(fd.entries());
+
+  if (!data.first_name || !data.last_name || !data.username || !data.email || !data.phone || !data.password) {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'يرجى ملء جميع الحقول.';
+    return;
+  }
+  if (data.password !== data.confirm_password) {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'كلمتا المرور غير متطابقتين.';
+    return;
+  }
+  if (data.password.length < 6) {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.';
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'جارٍ إنشاء الحساب...';
+
+  try {
+    const apiBaseUrl = (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE)
+      ? API_CONFIG.BASE
+      : (window.location.protocol.startsWith('http')
+        ? `${window.location.origin}/api`
+        : 'http://localhost:3001/api');
+
+    const res = await fetch(`${apiBaseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      msg.className = 'message is-visible success';
+      msg.textContent = 'تم إنشاء الحساب بنجاح! جارٍ التوجيه...';
+      setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+    } else {
+      msg.className = 'message is-visible error';
+      msg.textContent = result.error || result.message || 'حدث خطأ أثناء التسجيل.';
+    }
+  } catch {
+    msg.className = 'message is-visible error';
+    msg.textContent = 'تعذّر الاتصال بالخادم.';
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'إنشاء الحساب';
+  }
+});
+</script>
+<script src="js/blobs.js"></script>
+</body>
+</html>

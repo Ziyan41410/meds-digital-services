@@ -1,0 +1,132 @@
+🚀 MEDS Digital Services - دليل التشغيل السريع
+
+═══════════════════════════════════════════════════════════════
+
+📋 المتطلبات:
+  ✓ Node.js v14+ 
+  ✓ MySQL 5.7+
+  ✓ npm أو yarn
+
+═══════════════════════════════════════════════════════════════
+
+🔧 خطوات التثبيت:
+
+1️⃣ استنساخ المشروع:
+   cd your-folder
+   git clone https://github.com/yourname/meds-digital-services.git
+
+2️⃣ تثبيت المكتبات:
+   cd meds-digital-services
+   npm install
+
+3️⃣ إعداد قاعدة البيانات:
+   • فتح MySQL
+   • تشغيل: database/meds_schema.sql
+
+4️⃣ إعداد البيئة:
+   • نسخ .env.example → .env.local
+   • تعديل البيانات (Database, JWT Secret, Email)
+
+5️⃣ تشغيل المشروع:
+   npm run dev
+
+6️⃣ فتح المتصفح:
+   http://localhost:3000
+
+═══════════════════════════════════════════════════════════════
+
+📂 هيكل المشروع:
+
+meds-digital-services/
+├── backend/              # كود الخادم
+│   ├── controllers/      # منطق المعالجة
+│   ├── routes/           # مسارات API
+│   ├── middlewares/      # دوال وسيطة
+│   ├── config/           # إعدادات
+│   └── app.js            # تطبيق Express
+├── frontend/             # الواجهة الأمامية
+│   ├── index.html        # الصفحة الرئيسية
+│   └── assets/           # CSS و JavaScript
+├── database/             # ملفات قاعدة البيانات
+└── README.md             # التوثيق الكامل
+
+═══════════════════════════════════════════════════════════════
+
+🔌 أهم نقاط API:
+
+Authentication:
+  POST   /api/auth/register      - التسجيل الجديد
+  POST   /api/auth/login         - تسجيل الدخول
+  GET    /api/auth/me            - بيانات المستخدم
+
+Services:
+  GET    /api/services           - جميع الخدمات
+  GET    /api/services/:id       - خدمة محددة
+
+Projects:
+  POST   /api/projects           - إنشاء مشروع
+  GET    /api/projects/client/list - مشاريع العميل
+
+Reviews:
+  POST   /api/reviews            - إضافة تقييم
+  GET    /api/reviews/featured   - أفضل التقييمات
+
+═══════════════════════════════════════════════════════════════
+
+🎯 الميزات:
+
+✅ نظام مصادقة آمن بـ JWT
+✅ قاعدة بيانات محسنة بـ MySQL
+✅ واجهة مستجيبة (Responsive)
+✅ Dark/Light Mode
+✅ إدارة المشاريع الكاملة
+✅ نظام التقييمات
+✅ معرض الأعمال
+
+═══════════════════════════════════════════════════════════════
+
+🐛 استكشاف الأخطاء:
+
+مشكلة: "Connection refused"
+✓ تأكد من تشغيل MySQL
+✓ تحقق من بيانات الاتصال
+
+مشكلة: "Database not found"
+✓ تشغيل ملف Schema
+
+مشكلة: "Port 3000 already in use"
+✓ غير المنفذ في .env.local
+
+═══════════════════════════════════════════════════════════════
+
+📚 الملفات المهمة:
+
+.env.local                - متغيرات البيئة (PRIVATE)
+package.json              - المكتبات والمشاريع
+database/meds_schema.sql  - قاعدة البيانات
+backend/app.js            - تطبيق Express
+frontend/index.html       - الصفحة الرئيسية
+
+═══════════════════════════════════════════════════════════════
+
+✨ الخطوات التالية:
+
+1. تخصيص الألوان والعلامة التجارية
+2. إضافة صور المشاريع
+3. ربط نظام الدفع (Stripe/PayPal)
+4. تفعيل نظام البريد الإلكتروني
+5. نشر على الخادم
+
+═══════════════════════════════════════════════════════════════
+
+📞 الدعم:
+
+📧 البريد: support@medsdigitalservices.com
+🌐 الموقع: www.medsdigitalservices.com
+💬 تويتر: @MEDSServices
+
+═══════════════════════════════════════════════════════════════
+
+✓ تم إعداد المشروع بنجاح! 🎉
+
+شكراً لاستخدام MEDS Digital Services Platform

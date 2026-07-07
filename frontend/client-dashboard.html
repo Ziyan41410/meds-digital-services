@@ -1,0 +1,2114 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة العميل | MEDS Digital Services</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dynamicForms.css">
+  <style>
+
+/* ════════════════════════════════════════════
+   HEADER — World-class redesign
+════════════════════════════════════════════ */
+.site-header {
+  position: sticky; top: 0; z-index: 200;
+  height: 60px;
+  background: var(--surface-glass);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.header-inner {
+  width: min(1280px, calc(100% - 32px));
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Brand ── */
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  padding-inline-end: 20px;
+  border-inline-end: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.header-brand .bmark {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: grid; place-items: center;
+  color: #fff; font-size: 1rem; font-weight: 900;
+  box-shadow: 0 2px 10px var(--primary-glow);
+  transition: transform 0.2s;
+}
+.header-brand:hover .bmark { transform: scale(1.1) rotate(-5deg); }
+
+/* ── Nav tabs (center) ── */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 16px;
+  flex: 1;
+}
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: var(--surface-muted); }
+.nav-tab.active { color: var(--text); background: var(--surface-muted); }
+.nav-tab svg { opacity: 0.6; }
+.nav-tab:hover svg, .nav-tab.active svg { opacity: 1; }
+
+/* ── Right side controls ── */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+/* icon button */
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid; place-items: center;
+  font-size: 1rem;
+  transition: color 0.15s, background 0.15s;
+  position: relative;
+}
+.icon-btn:hover { color: var(--text); background: var(--surface-muted); }
+
+/* online dot on notif */
+.icon-btn .notif-dot {
+  position: absolute;
+  top: 6px; inset-inline-end: 6px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 1.5px solid var(--surface-glass);
+}
+
+/* API status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.status-pill .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted);
+  animation: pulse 2s infinite;
+}
+.status-pill .dot.online { background: var(--success); }
+.status-pill .dot.offline { background: var(--danger); animation: none; }
+
+/* ── User avatar + dropdown ── */
+.user-menu { position: relative; }
+.user-avatar-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: linear-gradient(135deg, var(--primary), #2563eb);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: grid; place-items: center;
+  font-family: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.user-avatar-btn:hover { border-color: var(--primary); transform: scale(1.05); }
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+  overflow: hidden;
+  z-index: 300;
+  display: none;
+  animation: fadeDown 0.15s ease;
+}
+.user-dropdown.open { display: block; }
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-user-info {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.dropdown-user-info .name { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.dropdown-user-info .role { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: inherit;
+  font-family: inherit;
+  transition: background 0.12s;
+}
+.dropdown-item:hover { background: var(--surface-muted); }
+.dropdown-item svg { color: var(--muted); flex-shrink: 0; }
+.dropdown-item.danger { color: var(--danger); }
+.dropdown-item.danger svg { color: var(--danger); }
+.dropdown-sep { height: 1px; background: var(--line); margin: 4px 0; }
+
+/* ════════════════════════════════════════════
+   SETTINGS PANEL (slide-in drawer)
+════════════════════════════════════════════ */
+.settings-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(3px);
+  display: none;
+  animation: fadeOverlay 0.2s ease;
+}
+.settings-overlay.open { display: block; }
+@keyframes fadeOverlay {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+.settings-drawer {
+  position: fixed;
+  top: 0; inset-inline-end: -480px;
+  width: 440px; max-width: 96vw;
+  height: 100vh;
+  background: var(--surface);
+  border-inline-start: 1px solid var(--line);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  transition: inset-inline-end 0.3s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.settings-drawer.open { inset-inline-end: 0; }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.drawer-header h2 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.drawer-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: none; background: none;
+  color: var(--muted); cursor: pointer;
+  display: grid; place-items: center;
+  font-family: inherit; font-size: 1.1rem;
+  transition: background 0.15s, color 0.15s;
+}
+.drawer-close:hover { background: var(--surface-muted); color: var(--text); }
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24px 32px;
+}
+
+/* settings sections */
+.settings-section { margin-top: 28px; }
+.settings-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 0.875rem; font-weight: 600; color: var(--text); }
+.settings-row-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.settings-row-val { font-size: 0.85rem; color: var(--muted); }
+
+/* profile avatar in settings */
+.settings-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #2563eb);
+  display: grid; place-items: center;
+  color: #fff; font-size: 1.6rem; font-weight: 900;
+  margin: 0 auto 16px;
+}
+
+/* toggle switch */
+.toggle-switch {
+  width: 40px; height: 22px;
+  border-radius: 99px;
+  background: var(--line);
+  border: none; cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle-switch.on { background: var(--primary); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px; inset-inline-start: 3px;
+  transition: inset-inline-start 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after { inset-inline-start: 21px; }
+
+/* editable field */
+.settings-field {
+  width: 100%;
+  background: var(--surface-muted);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-top: 8px;
+}
+.settings-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.settings-field[readonly] { opacity: 0.65; cursor: default; }
+
+.settings-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px;
+  font: inherit;
+  cursor: pointer; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--text);
+  transition: all 0.15s;
+}
+.settings-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+.settings-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.settings-btn.primary:hover { background: var(--primary-dark); }
+.settings-btn.danger { border-color: rgba(220,38,38,0.3); color: var(--danger); }
+.settings-btn.danger:hover { background: rgba(220,38,38,0.06); }
+
+/* password change section */
+.pw-form { display: grid; gap: 10px; margin-top: 10px; }
+
+/* ════════════════════════════════════════════
+   DASHBOARD CONTENT
+════════════════════════════════════════════ */
+.dashboard { padding: 32px 0 60px; }
+
+.page-hero {
+  margin-bottom: 28px;
+}
+.page-hero h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.page-hero p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+/* Quick actions strip */
+.qa-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.qa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.qa-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: rgba(13,148,136,0.05);
+  transform: translateY(-1px);
+}
+.qa-btn.primary {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+  box-shadow: 0 3px 14px var(--primary-glow);
+}
+.qa-btn.primary:hover { background: var(--primary-dark); }
+
+/* stats header row */
+.section-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-row h2 { margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.refresh-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 7px;
+  font: inherit;
+  color: var(--muted); background: none;
+  border: 1px solid transparent; cursor: pointer;
+  transition: all 0.15s;
+}
+.refresh-btn:hover { background: var(--surface-muted); color: var(--text); border-color: var(--line); }
+.refresh-btn.spinning svg { animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* metrics */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::after {
+  content: '';
+  position: absolute; top: 0; inset-inline-end: 0;
+  width: 70px; height: 70px;
+  background: radial-gradient(circle at top right, var(--primary-glow), transparent 70%);
+  pointer-events: none;
+}
+.metric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+.metric-card.loading .metric-num {
+  color: transparent;
+  background: var(--line);
+  border-radius: 6px;
+  animation: pulse-bg 1.2s infinite;
+}
+@keyframes pulse-bg { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+.metric-icon { font-size: 1.3rem; margin-bottom: 12px; }
+.metric-num { font-size: 2rem; font-weight: 900; color: var(--primary-dark); line-height: 1; margin-bottom: 5px; }
+.metric-label { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+.metric-badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: 0.72rem; font-weight: 700;
+  margin-top: 6px;
+}
+.metric-badge.up { background: rgba(22,163,74,0.1); color: #16a34a; }
+.metric-badge.warn { background: rgba(245,158,11,0.12); color: #d97706; }
+.metric-badge.blue { background: rgba(37,99,235,0.1); color: #2563eb; }
+.metric-badge.neutral { background: var(--surface-muted); color: var(--muted); }
+
+/* main grid */
+.main-grid { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+
+.dashboard-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.panel-header h3 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+.panel-header a { font-size: 0.8rem; color: var(--primary-dark); font-weight: 700; }
+
+/* project rows */
+.project-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+  transition: opacity 0.15s;
+}
+.project-row:last-child { border-bottom: none; }
+.project-row:hover { opacity: 0.8; }
+.project-row h4 { margin: 0 0 3px; font-size: 0.875rem; font-weight: 700; }
+.project-row p  { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.status-badge { padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.badge-pending    { background: rgba(99,102,241,0.1); color: #6366f1; }
+.badge-in_progress{ background: rgba(37,99,235,0.1); color: #2563eb; }
+.badge-completed  { background: rgba(22,163,74,0.1); color: #16a34a; }
+.badge-on_hold    { background: rgba(239,68,68,0.08); color: #dc2626; }
+.badge-cancelled  { background: var(--surface-muted); color: var(--muted); }
+.badge-review     { background: rgba(245,158,11,0.12); color: #d97706; }
+
+/* skeleton rows */
+.skel {
+  height: 48px; background: var(--line); border-radius: 8px;
+  margin-bottom: 10px; animation: pulse-bg 1.2s infinite;
+}
+
+/* activity */
+.activity-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 6px;
+}
+.activity-item .msg { font-size: 0.83rem; font-weight: 600; }
+.activity-item .time { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
+/* last updated */
+.last-updated { font-size: 0.75rem; color: var(--muted); }
+
+/* toast */
+.toast {
+  position: fixed; bottom: 24px; inset-inline-start: 24px; z-index: 600;
+  padding: 12px 20px; border-radius: 10px;
+  font-size: 0.88rem; font-weight: 700;
+  background: var(--text); color: var(--surface);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  display: none;
+  animation: slideFromBottom 0.3s ease;
+}
+.toast.show { display: block; }
+@keyframes slideFromBottom {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .header-nav { display: none; }
+}
+@media (max-width: 640px) {
+  .header-brand span:last-child { display: none; }
+  .status-pill { display: none; }
+}
+
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ WORLD-CLASS HEADER ════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Brand -->
+    <a class="header-brand" href="index.html">
+      <div class="bmark">M</div>
+      <span>MEDS</span>
+    </a>
+
+    <!-- Center nav tabs -->
+    <nav class="header-nav">
+      <a class="nav-tab active" href="client-dashboard.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <a class="nav-tab" href="projects.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        المشاريع
+      </a>
+      <a class="nav-tab" href="chats.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        المحادثات
+      </a>
+      <a class="nav-tab" href="invoices.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        الفواتير
+      </a>
+    </nav>
+
+    <!-- Right controls -->
+    <div class="header-controls">
+
+      <!-- API status -->
+      <div class="status-pill">
+        <div class="dot" id="apiDot"></div>
+        <span id="apiStatus">فحص...</span>
+      </div>
+
+      <!-- Notifications -->
+      <button class="icon-btn" id="btnNotif" title="الإشعارات">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+
+      <!-- Theme -->
+      <button class="icon-btn" id="themeToggle" title="تبديل المظهر">
+        <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <!-- User avatar + dropdown -->
+      <div class="user-menu">
+        <button class="user-avatar-btn" id="userAvatarBtn" title="حسابي" type="button">
+          <span id="avatarLetter">م</span>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="dropdown-user-info">
+            <div class="name" id="ddName">جارٍ التحميل...</div>
+            <div class="role" id="ddEmail">—</div>
+          </div>
+          <button class="dropdown-item" id="ddSettings">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+            الإعدادات
+          </button>
+          <button class="dropdown-item" id="ddProfile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            الملف الشخصي
+          </button>
+          <div class="dropdown-sep"></div>
+          <button class="dropdown-item danger" id="ddLogout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            تسجيل الخروج
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════ SETTINGS DRAWER ════════════════ -->
+<div class="settings-overlay" id="settingsOverlay"></div>
+<aside class="settings-drawer" id="settingsDrawer" role="dialog" aria-modal="true" aria-label="الإعدادات">
+  <div class="drawer-header">
+    <h2>⚙️ الإعدادات</h2>
+    <button class="drawer-close" id="closeSettings">✕</button>
+  </div>
+  <div class="drawer-body">
+
+    <!-- Profile section -->
+    <div class="settings-section">
+      <p class="settings-section-title">الملف الشخصي</p>
+      <div style="text-align:center;padding:16px 0 8px;">
+        <div class="settings-avatar" id="settingsAvatar">م</div>
+        <div style="font-size:0.875rem;font-weight:700;" id="settingsFullName">—</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;" id="settingsRole">عميل</div>
+      </div>
+
+      <div style="display:grid;gap:10px;margin-top:8px;">
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">الاسم الأول</label>
+          <input class="settings-field" id="sfFirstName" placeholder="الاسم الأول">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">الاسم العائلي</label>
+          <input class="settings-field" id="sfLastName" placeholder="الاسم العائلي">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--muted);">اسم المستخدم</label>
+          <input class="settings-field" id="sfUsername" placeholder="username" readonly>
+        </div>
+        <button class="settings-btn primary" id="btnSaveProfile" style="width:100%;justify-content:center;">
+          حفظ التغييرات
+        </button>
+      </div>
+    </div>
+
+    <!-- Login info -->
+    <div class="settings-section">
+      <p class="settings-section-title">معلومات تسجيل الدخول</p>
+
+      <div class="settings-row">
+        <div style="width:100%;">
+          <label class="settings-row-label" for="sfEmail">البريد الإلكتروني</label>
+          <input class="settings-field" id="sfEmail" type="email" autocomplete="email" placeholder="email@example.com">
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <div style="width:100%;">
+          <label class="settings-row-label" for="sfPhone">رقم الهاتف</label>
+          <input class="settings-field" id="sfPhone" type="tel" autocomplete="tel" placeholder="+213 XXX XXX XXX">
+        </div>
+      </div>
+
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div class="settings-row-label">تغيير كلمة المرور</div>
+        <!-- form مطلوب لتجنب تحذير المتصفح حول حقول كلمة المرور خارج نموذج -->
+        <form class="pw-form" id="pwForm" style="width:100%;" autocomplete="on" onsubmit="return false;">
+          <!-- حقل username مخفي مطلوب من المتصفح لربط كلمة المرور بالحساب الصحيح -->
+          <input type="text" name="username" id="sfUsernameHint"
+                 autocomplete="username"
+                 style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;tab-index:-1;"
+                 aria-hidden="true" tabindex="-1">
+          <input class="settings-field" type="password" id="sfOldPw" name="current-password" autocomplete="current-password" placeholder="كلمة المرور الحالية">
+          <input class="settings-field" type="password" id="sfNewPw" name="new-password" autocomplete="new-password" placeholder="كلمة المرور الجديدة (6 أحرف+)">
+          <input class="settings-field" type="password" id="sfConfirmPw" name="new-password-confirm" autocomplete="new-password" placeholder="تأكيد كلمة المرور الجديدة">
+          <button type="button" class="settings-btn primary" id="btnChangePw" style="width:100%;justify-content:center;">تحديث كلمة المرور</button>
+        </form>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">آخر دخول</div>
+          <div class="settings-row-sub" id="sfLastLogin">—</div>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">تاريخ إنشاء الحساب</div>
+          <div class="settings-row-sub" id="sfCreatedAt">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="settings-section">
+      <p class="settings-section-title">التفضيلات</p>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">الوضع الداكن</div>
+          <div class="settings-row-sub">تغيير مظهر التطبيق</div>
+        </div>
+        <button class="toggle-switch" id="darkToggle" type="button"></button>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">إشعارات البريد</div>
+          <div class="settings-row-sub">استقبال تحديثات المشاريع</div>
+        </div>
+        <button class="toggle-switch on" id="emailNotifToggle" type="button"></button>
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="settings-section">
+      <p class="settings-section-title">منطقة خطرة</p>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div>
+          <div class="settings-row-label">حذف الحساب</div>
+          <div class="settings-row-sub">سيتم حذف جميع بياناتك بشكل نهائي</div>
+        </div>
+        <button class="settings-btn danger" id="btnDeleteAccount">🗑️ حذف حسابي</button>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+<!-- ════════════════ MAIN CONTENT ════════════════ -->
+<div class="app-shell">
+  <main class="container dashboard">
+
+    <!-- Page hero -->
+    <div class="page-hero">
+      <h1 id="welcomeTitle">لوحة التحكم</h1>
+      <p id="welcomeSubtitle">مرحباً! إليك ملخص حسابك.</p>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="qa-strip">
+      <button class="qa-btn primary" id="btnNewRequest">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        طلب خدمة جديدة
+      </button>
+      <a class="qa-btn" href="invoices.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        الفواتير
+      </a>
+      <a class="qa-btn" href="chats.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        المحادثات
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="section-row">
+      <h2>الإحصائيات</h2>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="last-updated" id="lastUpdated"></span>
+        <button class="refresh-btn" id="btnRefresh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          تحديث
+        </button>
+      </div>
+    </div>
+
+    <div class="metrics-grid" id="metricsGrid">
+
+      <!-- بطاقة: مشاريع نشطة -->
+      <article class="metric-card loading" id="card-active">
+        <div class="metric-icon">🚀</div>
+        <div class="metric-num" id="statActiveProjects" style="color:var(--accent);">—</div>
+        <div class="metric-label">مشاريع نشطة</div>
+        <div class="metric-badge blue" id="badgeActive">جارٍ التحميل...</div>
+      </article>
+
+      <!-- بطاقة: متوسط التقدم -->
+      <article class="metric-card loading" id="card-progress">
+        <div class="metric-icon">📊</div>
+        <div class="metric-num" id="statAvgProgress" style="color:var(--primary);">—</div>
+        <div class="metric-label">متوسط التقدم %</div>
+        <div class="metric-badge neutral" id="badgeProgress">جارٍ الحساب...</div>
+      </article>
+
+      <!-- بطاقة: مشاريع مكتملة -->
+      <article class="metric-card loading" id="card-completed">
+        <div class="metric-icon">✅</div>
+        <div class="metric-num" id="statCompletedProjects" style="color:var(--success);">—</div>
+        <div class="metric-label">مشاريع مكتملة</div>
+        <div class="metric-badge up" id="badgeCompleted">منجزة</div>
+      </article>
+
+      <!-- بطاقة: مدفوعات معلقة -->
+      <article class="metric-card loading" id="card-payments">
+        <div class="metric-icon">💳</div>
+        <div class="metric-num" id="statPendingPayments" style="color:var(--warning);">—</div>
+        <div class="metric-label">مدفوعات معلقة</div>
+        <div class="metric-badge warn" id="badgePayments">جارٍ التحقق...</div>
+      </article>
+
+    </div><!-- /metrics-grid -->
+
+    <!-- Main grid -->
+    <div class="main-grid">
+      <!-- Projects panel -->
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <h3>آخر المشاريع</h3>
+          <a href="#">عرض الكل ←</a>
+        </div>
+        <div id="projectsList">
+          <!-- Skeleton يظهر فوراً قبل وصول البيانات -->
+          <div class="skel"></div>
+          <div class="skel"></div>
+          <div class="skel" style="height:60px;"></div>
+        </div>
+      </div>
+
+      <!-- Activity panel -->
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <h3>النشاط الأخير</h3>
+        </div>
+        <div id="activityList">
+          <div class="skel" style="height:36px;"></div>
+          <div class="skel" style="height:36px;"></div>
+          <div class="skel" style="height:36px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script>
+/* ══════════════════════════════════
+   Helpers
+══════════════════════════════════ */
+const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+if (!token) window.location.href = 'login.html';
+const API_ORIGIN = API_CONFIG.BASE.replace('/api', '');
+
+function toast(msg, ok = true) {
+  const el = document.getElementById('toast');
+  el.textContent = (ok ? '✅ ' : '❌ ') + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function animateCounter(el, target, suffix = '') {
+  if (!el) return;
+  el.closest?.('.metric-card')?.classList.remove('loading');
+  let cur = 0, steps = 25;
+  const inc = target / steps;
+  const id = setInterval(() => {
+    cur = Math.min(cur + inc, target);
+    el.textContent = Math.round(cur) + suffix;
+    if (cur >= target) { el.textContent = target + suffix; clearInterval(id); }
+  }, 18);
+}
+
+const STATUS_MAP = {
+  pending:     { label: 'قيد الانتظار',   cls: 'badge-pending' },
+  in_progress: { label: 'قيد التنفيذ',    cls: 'badge-in_progress' },
+  completed:   { label: 'مكتمل',          cls: 'badge-completed' },
+  on_hold:     { label: 'متوقف مؤقتاً',  cls: 'badge-on_hold' },
+  cancelled:   { label: 'ملغى',           cls: 'badge-cancelled' },
+  review:      { label: 'قيد المراجعة',   cls: 'badge-review' },
+};
+
+/* ══════════════════════════════════
+   Theme
+══════════════════════════════════ */
+const darkToggleSw = document.getElementById('darkToggle');
+function applyTheme(dark) {
+  document.body.classList.toggle('dark-mode', dark);
+  darkToggleSw.classList.toggle('on', dark);
+  // update icon
+  const icon = document.getElementById('themeIcon');
+  icon.setAttribute('d', dark
+    ? 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'
+    : 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'
+  );
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+const initDark = localStorage.getItem('theme') === 'dark';
+applyTheme(initDark);
+
+document.getElementById('themeToggle').addEventListener('click', () => applyTheme(!document.body.classList.contains('dark-mode')));
+darkToggleSw.addEventListener('click', () => applyTheme(!document.body.classList.contains('dark-mode')));
+
+/* ══════════════════════════════════
+   User dropdown
+══════════════════════════════════ */
+const userAvatarBtn = document.getElementById('userAvatarBtn');
+const userDropdown  = document.getElementById('userDropdown');
+userAvatarBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  userDropdown.classList.toggle('open');
+});
+document.addEventListener('click', () => userDropdown.classList.remove('open'));
+
+document.getElementById('ddLogout').addEventListener('click', () => {
+  localStorage.removeItem('token');
+  window.location.href = 'login.html';
+});
+document.getElementById('ddSettings').addEventListener('click', openSettings);
+document.getElementById('ddProfile').addEventListener('click', openSettings);
+
+/* ══════════════════════════════════
+   Settings drawer
+══════════════════════════════════ */
+function openSettings() {
+  userDropdown.classList.remove('open');
+  document.getElementById('settingsDrawer').classList.add('open');
+  document.getElementById('settingsOverlay').classList.add('open');
+  loadUserInfo();
+}
+function closeSettings() {
+  document.getElementById('settingsDrawer').classList.remove('open');
+  document.getElementById('settingsOverlay').classList.remove('open');
+}
+document.getElementById('closeSettings').addEventListener('click', closeSettings);
+document.getElementById('settingsOverlay').addEventListener('click', closeSettings);
+
+/* Load user info into settings */
+async function loadUserInfo() {
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!r.ok) throw new Error();
+    const result = await r.json();
+    const u = result.user || result.data || {};
+
+    const fullName = `${u.first_name||''} ${u.last_name||''}`.trim() || u.username || '—';
+    const letter = fullName.charAt(0) || 'م';
+
+    // header
+    document.getElementById('avatarLetter').textContent = letter;
+    document.getElementById('ddName').textContent = fullName;
+    document.getElementById('ddEmail').textContent = u.email || '—';
+
+    // welcome
+    document.getElementById('welcomeTitle').textContent = `مرحباً، ${u.first_name || fullName} 👋`;
+    document.getElementById('welcomeSubtitle').textContent = 'إليك ملخص حسابك اليوم.';
+
+    // settings drawer
+    document.getElementById('settingsAvatar').textContent = letter;
+    document.getElementById('settingsFullName').textContent = fullName;
+    document.getElementById('settingsRole').textContent = u.role === 'admin' ? 'مدير النظام' : 'عميل';
+    document.getElementById('sfFirstName').value  = u.first_name || '';
+    document.getElementById('sfLastName').value   = u.last_name  || '';
+    document.getElementById('sfUsername').value   = u.username   || '';
+    document.getElementById('sfEmail').value = u.email || '';
+    document.getElementById('sfPhone').value = u.phone || '';
+    document.getElementById('sfLastLogin').textContent =
+      u.last_login ? new Date(u.last_login).toLocaleString('ar-DZ') : 'غير متاح';
+    /* ملء حقل username المخفي في نموذج كلمة المرور — يُسكت تحذير المتصفح */
+    const usernameHint = document.getElementById('sfUsernameHint');
+    if (usernameHint) usernameHint.value = u.email || u.username || '';
+    document.getElementById('sfCreatedAt').textContent =
+      u.created_at ? new Date(u.created_at).toLocaleDateString('ar-DZ') : '—';
+
+  } catch {
+    // silently fail; use stored data if available
+  }
+}
+
+/* Save profile */
+document.getElementById('btnSaveProfile').addEventListener('click', async () => {
+  const body = {
+    first_name: document.getElementById('sfFirstName').value.trim(),
+    last_name:  document.getElementById('sfLastName').value.trim(),
+    email:      document.getElementById('sfEmail').value.trim(),
+    phone:      document.getElementById('sfPhone').value.trim(),
+  };
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/profile`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'فشل الحفظ');
+    }
+    toast('تم حفظ البيانات بنجاح');
+    loadUserInfo();
+  } catch (e) {
+    toast(e.message || 'فشل الحفظ – تحقق من الاتصال', false);
+  }
+});
+
+/* Change password */
+document.getElementById('btnChangePw').addEventListener('click', async () => {
+  const oldPw  = document.getElementById('sfOldPw').value;
+  const newPw  = document.getElementById('sfNewPw').value;
+  const confPw = document.getElementById('sfConfirmPw').value;
+  if (!oldPw || !newPw || !confPw) return toast('يرجى ملء جميع حقول كلمة المرور', false);
+  if (newPw !== confPw) return toast('كلمتا المرور غير متطابقتين', false);
+  if (newPw.length < 6) return toast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', false);
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ old_password: oldPw, new_password: newPw })
+    });
+    if (!r.ok) throw new Error((await r.json()).message || 'فشل');
+    toast('تم تحديث كلمة المرور');
+    ['sfOldPw','sfNewPw','sfConfirmPw'].forEach(id => document.getElementById(id).value = '');
+  } catch (e) {
+    toast(e.message || 'فشل تحديث كلمة المرور', false);
+  }
+});
+
+/* Delete account */
+document.getElementById('btnDeleteAccount').addEventListener('click', () => {
+  if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+  toast('هذه الميزة غير مفعّلة بعد', false);
+});
+
+/* Email notif toggle (preference only, no API call needed unless backend supports it) */
+document.getElementById('emailNotifToggle').addEventListener('click', function() {
+  this.classList.toggle('on');
+});
+
+/* ══════════════════════════════════
+   API health check
+══════════════════════════════════ */
+async function checkAPI() {
+  const dot = document.getElementById('apiDot');
+  const label = document.getElementById('apiStatus');
+  try {
+    const r = await fetch(`${API_ORIGIN}/health`, { signal: AbortSignal.timeout(3000) });
+    dot.className = r.ok ? 'dot online' : 'dot offline';
+    label.textContent = r.ok ? 'متصل' : 'خطأ';
+  } catch {
+    dot.className = 'dot offline';
+    label.textContent = 'غير متاح';
+  }
+}
+checkAPI();
+setInterval(checkAPI, 30000);
+
+/* ══════════════════════════════════
+   Dashboard stats from API
+══════════════════════════════════ */
+let _cdTimer = null;
+function restartCountdown(seconds = 30) {
+  if (_cdTimer) clearInterval(_cdTimer);
+  const btn = document.getElementById('btnRefresh');
+  if (!btn) return;
+  let rem = seconds;
+  const getEl = () => {
+    let el = btn.querySelector('.cd');
+    if (!el) {
+      el = document.createElement('span');
+      el.className = 'cd';
+      el.style.cssText = 'font-size:0.7rem;color:var(--muted);margin-inline-start:5px;opacity:0.7;';
+      btn.appendChild(el);
+    }
+    return el;
+  };
+  const tick = () => {
+    getEl().textContent = rem > 0 ? `(${rem}ث)` : '';
+    if (rem <= 0) { clearInterval(_cdTimer); _cdTimer = null; }
+    rem--;
+  };
+  tick();
+  _cdTimer = setInterval(tick, 1000);
+}
+
+/* ══════════════════════════════════════════════════════
+   CSS ديناميكي للعناصر الجديدة داخل project-row
+   يُحقن مرة واحدة فقط عند تحميل الصفحة
+══════════════════════════════════════════════════════ */
+(function injectProjectDynStyles() {
+  if (document.getElementById('_projDynStyles')) return;
+  const s = document.createElement('style');
+  s.id = '_projDynStyles';
+  s.textContent = `
+    /* تفاصيل مخصصة حسب domain */
+    .proj-details { display:flex; flex-wrap:wrap; gap:5px; margin:5px 0 7px; }
+    .proj-tag {
+      display:inline-flex; align-items:center;
+      padding:2px 8px; border-radius:99px;
+      font-size:0.71rem; font-weight:700;
+      background:var(--surface-muted); border:1px solid var(--line);
+      color:var(--muted); white-space:nowrap;
+    }
+    /* شريط التقدم */
+    .proj-progress-wrap { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+    .proj-progress-bar  { flex:1; height:4px; background:var(--line); border-radius:99px; overflow:hidden; }
+    .proj-progress-fill { height:100%; border-radius:99px; transition:width 0.6s cubic-bezier(0.22,1,0.36,1); }
+    .proj-progress-num  { font-size:0.73rem; font-weight:800; flex-shrink:0; min-width:32px; text-align:end; }
+    /* تاريخ انتهاء */
+    .proj-date      { font-size:0.74rem; color:var(--muted); }
+    .proj-date.late { color:var(--danger); font-weight:700; }
+    .late-badge {
+      display:inline-block; padding:1px 6px; border-radius:4px;
+      background:rgba(220,38,38,0.1); color:var(--danger);
+      font-size:0.68rem; font-weight:800; margin-inline-start:4px;
+    }
+    /* الحالة الفارغة */
+    .proj-empty {
+      text-align:center; padding:36px 20px; color:var(--muted);
+    }
+    .proj-empty .ico { font-size:2.2rem; margin-bottom:10px; }
+    .proj-empty h4   { margin:0 0 6px; font-size:0.95rem; font-weight:700; color:var(--text); }
+    .proj-empty p    { margin:0 0 14px; font-size:0.83rem; }
+    /* حالة خطأ */
+    .proj-error .ico { filter:grayscale(1); }
+    /* responsive */
+    @media (max-width:600px) {
+      .project-row { flex-wrap:wrap; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ──────────────────────────────────────────────────────
+   getProgressColor — لون شريط التقدم حسب النسبة والتأخر
+   > 70%  → var(--success) أخضر
+   30–70% → var(--warning) أصفر
+   < 30% أو متأخر → var(--danger) أحمر
+────────────────────────────────────────────────────── */
+function getProgressColor(pct, late = false) {
+  if (late || pct < 30) return 'var(--danger)';
+  if (pct >= 70)        return 'var(--success)';
+  return 'var(--warning)';
+}
+
+/* ──────────────────────────────────────────────────────
+   getDomainDetails — تفاصيل مخصصة حسب domain:
+   dev → نوع المشروع + الميزات
+   mkt → القنوات + الميزانية
+   sec → رابط الهدف + التقنيات
+────────────────────────────────────────────────────── */
+function getDomainDetails(p) {
+  let fd = p.form_data || {};
+  if (typeof fd === 'string') {
+    try { fd = JSON.parse(fd); } catch { fd = {}; }
+  }
+  if (p.domain === 'dev') {
+    const type = fd.project_type ? `<span class="proj-tag">🛠 ${fd.project_type}</span>` : '';
+    const feats = Array.isArray(fd.features) ? fd.features.map(f => `<span class="proj-tag">✦ ${f}</span>`).join('') : '';
+    return `<div class="proj-details">${type}${feats}</div>`;
+  }
+  if (p.domain === 'mkt') {
+    const ch  = Array.isArray(fd.channels) ? fd.channels.map(c => `<span class="proj-tag">📢 ${c}</span>`).join('') : '';
+    const bud = fd.ad_budget ? `<span class="proj-tag">💰 ${fd.ad_budget}</span>` : '';
+    return `<div class="proj-details">${ch}${bud}</div>`;
+  }
+  if (p.domain === 'sec') {
+    const url   = fd.target_url ? `<span class="proj-tag">🎯 ${fd.target_url}</span>` : '';
+    const stack = fd.tech_stack ? `<span class="proj-tag">⚙ ${fd.tech_stack}</span>` : '';
+    return `<div class="proj-details">${url}${stack}</div>`;
+  }
+  return '';
+}
+
+/* ──────────────────────────────────────────────────────
+   showSkeletonProjects — يعرض skeleton في قائمة المشاريع
+   يستخدم فئة .skel الموجودة في client-dashboard.html
+────────────────────────────────────────────────────── */
+function showSkeletonProjects() {
+  const el = document.getElementById('projectsList');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel" style="height:60px;"></div>`;
+}
+
+/* ──────────────────────────────────────────────────────
+   renderProjects — يبني HTML لكل مشروع ويحقنه
+   يستخدم: .project-row / .status-badge / .badge-* من style.css
+────────────────────────────────────────────────────── */
+function renderProjects(list) {
+  const el = document.getElementById('projectsList');
+  if (!el) return;
+
+  /* حالة فارغة */
+  if (!list || !list.length) {
+    el.innerHTML = `
+      <div class="proj-empty">
+        <div class="ico">📁</div>
+        <h4>لا توجد مشاريع بعد</h4>
+        <p>ابدأ بإنشاء طلب خدمة جديدة وستظهر مشاريعك هنا.</p>
+        <button class="qa-btn primary" onclick="document.getElementById('btnNewRequest').click()" style="margin:0 auto;">
+          + طلب خدمة جديدة
+        </button>
+      </div>`;
+    return;
+  }
+
+  const domainIcon = { dev:'💻', mkt:'📣', sec:'🔒' };
+
+  el.innerHTML = list.map(p => {
+    /* شارة الحالة */
+    const s = STATUS_MAP[p.status] || { label: p.status, cls: 'badge-pending' };
+
+    /* تاريخ الانتهاء والتأخر */
+    const endDate = p.end_date ? new Date(p.end_date) : null;
+    const isLate  = endDate && endDate < new Date() && p.status !== 'completed';
+    const dateStr = endDate ? endDate.toLocaleDateString('ar-DZ', { year:'numeric', month:'short', day:'numeric' }) : '—';
+
+    /* التقدم والألوان */
+    const pct   = p.progress ?? 0;
+    const color = getProgressColor(pct, isLate);
+
+    /* التفاصيل حسب domain */
+    const details = getDomainDetails(p);
+    const icon    = domainIcon[p.domain] || '📌';
+
+    return `
+      <div class="project-row" data-id="${p.id}">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+            <span style="font-size:0.95rem;">${icon}</span>
+            <h4 style="margin:0;font-size:0.875rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.title || '—'}</h4>
+          </div>
+          <p style="margin:0 0 5px;font-size:0.79rem;color:var(--muted);">${p.service_name || ''}</p>
+          ${details}
+          <div class="proj-progress-wrap">
+            <div class="proj-progress-bar">
+              <div class="proj-progress-fill" style="width:${pct}%;background:${color};"></div>
+            </div>
+            <span class="proj-progress-num" style="color:${color};">${pct}%</span>
+          </div>
+          <div class="proj-date${isLate ? ' late' : ''}">
+            ${isLate ? '⚠' : '📅'} الموعد: ${dateStr}${isLate ? '<span class="late-badge">متأخر!</span>' : ''}
+          </div>
+        </div>
+        <span class="status-badge ${s.cls}">${s.label}</span>
+      </div>`;
+  }).join('');
+}
+
+/* ──────────────────────────────────────────────────────
+   loadDashboardData — الدالة الرئيسية (تحل محل loadStats)
+   1. Skeleton فوراً
+   2. Fetch من /api/client/dashboard
+   3. تحديث بطاقات الإحصائيات
+   4. رسم المشاريع الديناميكية
+   5. معالجة الأخطاء
+────────────────────────────────────────────────────── */
+async function loadDashboardData(showSpin = false) {
+
+  /* ① Skeleton أولاً */
+  document.querySelectorAll('.metric-card').forEach(c => c.classList.add('loading'));
+  showSkeletonProjects();
+
+  const btn = document.getElementById('btnRefresh');
+  if (showSpin && btn) btn.classList.add('spinning');
+
+  try {
+    /* ② Fetch */
+    const r = await fetch(`${API_ORIGIN}/api/client/dashboard`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      signal: AbortSignal.timeout(10000)
+    });
+
+    /* نقرأ الـ Content-Type ونسجله للـ debugging */
+    const ct = r.headers.get('content-type') || '';
+    console.debug('[Dashboard] status:', r.status, '| content-type:', ct);
+
+    /* نحاول parse JSON بغض النظر عن الـ content-type
+       (بعض السيرفرات ترسل JSON بـ content-type خاطئ مثل text/html أو text/plain) */
+    const rawText = await r.text();
+
+    let body;
+    try {
+      body = JSON.parse(rawText);
+    } catch {
+      /* السيرفر أرجع HTML أو نص غير قابل للـ parse — المسار غير موجود */
+      console.error('[Dashboard] Non-JSON response:', rawText.slice(0, 200));
+      throw new Error(
+        r.status === 404
+          ? `المسار /api/client/dashboard غير موجود على السيرفر (404)`
+          : r.status === 401 || r.status === 403
+          ? `انتهت جلستك — يرجى تسجيل الدخول مجدداً (${r.status})`
+          : `الخادم أرجع استجابة غير متوقعة (${r.status}) — content-type: ${ct}`
+      );
+    }
+
+    if (!r.ok) throw new Error(body?.message || body?.error || `خطأ ${r.status}`);
+
+    const result = body;
+    /* دعم هيكلَي استجابة: { data: { stats, projects } } أو { stats, projects } مباشرة */
+    const data     = result.data || result;
+    const stats    = data.stats    || data;
+    const projects = data.projects || data.recentProjects || [];
+    const activity = data.recentActivity || [];
+
+    /* ③ تحديث الإحصائيات */
+    animateCounter(document.getElementById('statActiveProjects'),   stats.active_projects    ?? stats.activeProjects    ?? 0);
+    animateCounter(document.getElementById('statAvgProgress'),      stats.avg_progress       ?? stats.avgProgress       ?? 0);
+    animateCounter(document.getElementById('statCompletedProjects'),stats.completed_projects ?? stats.completedProjects ?? 0);
+    animateCounter(document.getElementById('statPendingPayments'),  stats.pending_payments   ?? stats.pendingPayments   ?? 0);
+
+    /* تحديث الشارات */
+    const activeCnt   = stats.active_projects    ?? stats.activeProjects    ?? 0;
+    const paymentsCnt = stats.pending_payments   ?? stats.pendingPayments   ?? 0;
+    const avgPct      = stats.avg_progress       ?? stats.avgProgress       ?? 0;
+
+    const bA = document.getElementById('badgeActive');
+    if (bA) { bA.textContent = activeCnt > 0 ? `${activeCnt} مشروع نشط` : 'لا مشاريع نشطة'; bA.className = `metric-badge ${activeCnt > 0 ? 'blue' : 'neutral'}`; }
+
+    const bP = document.getElementById('badgeProgress');
+    if (bP) { bP.textContent = avgPct >= 70 ? 'إنجاز ممتاز 🎉' : avgPct >= 40 ? 'تقدم جيد' : 'يحتاج متابعة'; bP.className = `metric-badge ${avgPct >= 70 ? 'up' : avgPct >= 40 ? 'neutral' : 'warn'}`; }
+
+    const bPay = document.getElementById('badgePayments');
+    if (bPay) { bPay.textContent = paymentsCnt > 0 ? `${paymentsCnt} فاتورة معلقة` : 'لا مستحقات'; bPay.className = `metric-badge ${paymentsCnt > 0 ? 'warn' : 'up'}`; }
+
+    /* ④ رسم المشاريع */
+    renderProjects(projects);
+    renderActivity(activity);
+
+    /* اسم المستخدم إن أُرسل مع الاستجابة */
+    if (data.userName || stats.userName) {
+      const name = data.userName || stats.userName;
+      document.getElementById('avatarLetter').textContent = name.charAt(0);
+      document.getElementById('ddName').textContent = name;
+      document.getElementById('welcomeTitle').textContent = `مرحباً، ${name} 👋`;
+    }
+
+    document.getElementById('lastUpdated').textContent = 'تحديث: ' + new Date().toLocaleTimeString('ar-DZ');
+    restartCountdown(30);
+
+  } catch (err) {
+    /* ⑤ معالجة الأخطاء */
+    console.error('loadDashboardData:', err);
+    document.querySelectorAll('.metric-card').forEach(c => c.classList.remove('loading'));
+    ['statActiveProjects','statAvgProgress','statCompletedProjects','statPendingPayments']
+      .forEach(id => { const e = document.getElementById(id); if (e) e.textContent = '—'; });
+
+    const container = document.getElementById('projectsList');
+    if (container) {
+      container.innerHTML = `
+        <div class="proj-empty proj-error">
+          <div class="ico">⚠️</div>
+          <h4>تعذّر تحميل المشاريع</h4>
+          <p>${err.name === 'TimeoutError' ? 'انتهت مهلة الاتصال بالخادم.' : (err.message || 'تحقق من اتصالك وحاول مجدداً.')}</p>
+          <button class="qa-btn" onclick="loadDashboardData(true)" style="margin:0 auto;">🔄 إعادة المحاولة</button>
+        </div>`;
+    }
+    toast('تعذّر تحميل البيانات — حاول مجدداً', false);
+  } finally {
+    if (btn) btn.classList.remove('spinning');
+  }
+}
+
+/* دالة loadStats تبقى كـ alias للتوافق مع بقية الكود (Socket.io، إلخ) */
+const loadStats = (spin) => loadDashboardData(spin);
+
+function renderActivity(list) {
+  const el = document.getElementById('activityList');
+  const clrs = ['var(--primary)','var(--accent)','var(--success)','#f59e0b','#8b5cf6'];
+  if (!list.length) {
+    el.innerHTML = `<p style="color:var(--muted);font-size:0.82rem;text-align:center;padding:16px 0;">لا يوجد نشاط بعد</p>`;
+    return;
+  }
+  el.innerHTML = list.map((a,i) => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${clrs[i%clrs.length]};"></div>
+      <div><div class="msg">${a.message||a.title||'—'}</div><div class="time">${a.time_ago||''}</div></div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   SERVICE REQUEST MODAL — Multi-step form
+══════════════════════════════════════════════════════ */
+
+/* inject modal styles once */
+(function injectModalStyles() {
+  if (document.getElementById('srModalStyle')) return;
+  const s = document.createElement('style');
+  s.id = 'srModalStyle';
+  s.textContent = `
+/* ── Overlay ── */
+.sr-overlay {
+  position: fixed; inset: 0; z-index: 700;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sr-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* ── Modal card ── */
+.sr-modal {
+  width: min(600px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+  overflow: hidden;
+  transform: translateY(28px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+.sr-overlay.open .sr-modal { transform: translateY(0) scale(1); }
+
+/* ── Header ── */
+.sr-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.sr-header-left { display: flex; align-items: center; gap: 10px; }
+.sr-header-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: grid; place-items: center;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 12px var(--primary-glow);
+}
+.sr-header h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.sr-header p  { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted); }
+.sr-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: none; background: none; color: var(--muted);
+  cursor: pointer; display: grid; place-items: center;
+  font-size: 1.2rem; transition: background 0.15s, color 0.15s;
+}
+.sr-close:hover { background: var(--surface-muted); color: var(--text); }
+
+/* ── Steps bar ── */
+.sr-steps {
+  display: flex; align-items: center;
+  gap: 0; padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-muted);
+}
+.sr-step {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; font-weight: 700; color: var(--muted);
+  flex: 1; position: relative;
+  transition: color 0.2s;
+}
+.sr-step.active { color: var(--primary-dark); }
+.sr-step.done   { color: var(--success); }
+.sr-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--line); color: var(--muted);
+  display: grid; place-items: center;
+  font-size: 0.72rem; font-weight: 900; flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+.sr-step.active .sr-step-num {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+.sr-step.done .sr-step-num { background: var(--success); color: #fff; }
+.sr-step-connector {
+  flex: 1; height: 2px;
+  background: var(--line); border-radius: 99px;
+  margin: 0 8px;
+  transition: background 0.3s;
+}
+.sr-step.done + .sr-step-connector,
+.sr-step-connector.done { background: var(--success); }
+
+/* ── Body ── */
+.sr-body { padding: 24px; min-height: 240px; }
+
+/* ── Service cards grid ── */
+.sr-service-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+@media (max-width: 480px) { .sr-service-grid { grid-template-columns: 1fr 1fr; } }
+
+.sr-service-card {
+  padding: 14px 10px; border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--surface-muted);
+  cursor: pointer; text-align: center;
+  transition: all 0.18s;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.sr-service-card:hover {
+  border-color: var(--primary);
+  background: rgba(13,148,136,0.05);
+  transform: translateY(-2px);
+}
+.sr-service-card.selected {
+  border-color: var(--primary);
+  background: rgba(13,148,136,0.08);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.sr-service-icon { font-size: 1.6rem; line-height: 1; }
+.sr-service-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+.sr-service-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+
+/* ── Form fields ── */
+.sr-field { margin-bottom: 16px; }
+.sr-field label {
+  display: block; font-size: 0.82rem; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+}
+.sr-field .sr-req { color: var(--primary); margin-right: 2px; }
+.sr-input, .sr-textarea, .sr-select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-muted);
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sr-input:focus, .sr-textarea:focus, .sr-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.sr-input.error, .sr-textarea.error { border-color: var(--danger); }
+.sr-textarea { resize: vertical; min-height: 100px; }
+.sr-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+.sr-err-msg { font-size: 0.75rem; color: var(--danger); margin-top: 4px; display: none; }
+.sr-err-msg.show { display: block; }
+
+/* ── Budget row ── */
+.sr-budget-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+
+/* ── Urgency pills ── */
+.sr-urgency-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.sr-urgency-pill {
+  padding: 6px 14px; border-radius: 99px; cursor: pointer;
+  border: 1.5px solid var(--line);
+  font: inherit;
+  background: var(--surface-muted); color: var(--muted);
+  transition: all 0.15s;
+}
+.sr-urgency-pill:hover { border-color: var(--primary); color: var(--primary-dark); }
+.sr-urgency-pill.sel { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sr-urgency-pill.warn.sel { background: var(--warning); border-color: var(--warning); }
+.sr-urgency-pill.danger.sel { background: var(--danger); border-color: var(--danger); }
+
+/* ── Summary card ── */
+.sr-summary {
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 12px; padding: 18px;
+}
+.sr-summary-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 8px; padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+.sr-summary-row:last-child { border-bottom: none; }
+.sr-summary-row .key { color: var(--muted); font-weight: 600; flex-shrink: 0; }
+.sr-summary-row .val { font-weight: 700; text-align: left; }
+.sr-success-anim {
+  text-align: center; padding: 16px 0;
+}
+.sr-success-anim .check-circle {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(22,163,74,0.12); color: var(--success);
+  font-size: 1.8rem; display: grid; place-items: center;
+  margin: 0 auto 14px;
+  animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.sr-success-anim h4 { margin: 0 0 6px; font-size: 1.1rem; font-weight: 800; }
+.sr-success-anim p  { margin: 0; color: var(--muted); font-size: 0.88rem; }
+
+/* ── Footer ── */
+.sr-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-muted);
+  gap: 10px;
+}
+.sr-footer-left { font-size: 0.78rem; color: var(--muted); }
+.sr-btn-row { display: flex; gap: 8px; }
+.sr-btn {
+  padding: 9px 20px; border-radius: 8px;
+  font: inherit;
+  cursor: pointer; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--text);
+  transition: all 0.15s;
+}
+.sr-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+.sr-btn.primary {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+  box-shadow: 0 3px 12px var(--primary-glow);
+}
+.sr-btn.primary:hover { background: var(--primary-dark); }
+.sr-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Loading spinner inside btn ── */
+.sr-btn .spin { display: inline-block; animation: spin 0.7s linear infinite; margin-inline-start: 4px; }
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ─── State ─── */
+let srState = { step: 1, serviceId: null, serviceName: '', urgency: 'normal', data: {} };
+let srServices = [];
+
+/* ─── Open modal ─── */
+async function openServiceRequestModal() {
+  srState = { step: 1, serviceId: null, serviceName: '', urgency: 'normal', data: {} };
+
+  /* fetch services from API */
+  srServices = [
+    { id: 1, name: 'تطوير مواقع ويب', icon: '🌐', desc: 'مواقع ولاندينج بيج' },
+    { id: 2, name: 'تسويق رقمي', icon: '📣', desc: 'حملات وإدارة محتوى' },
+    { id: 3, name: 'أمن سيبراني', icon: '🔒', desc: 'فحص واختبار اختراق' }
+  ];
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/dashboard/services`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const res = await r.json();
+    if (res.success && res.data?.length) {
+      srServices = res.data.map(s => ({
+        id: s.id, name: s.name,
+        icon: s.icon || (s.category === 'programming' ? '🌐' : s.category === 'marketing' ? '📣' : '🔒'),
+        desc: s.short_description || s.description?.slice(0,40) || ''
+      }));
+    }
+  } catch {}
+
+  buildSRModal();
+  const ov = document.getElementById('srOverlay');
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ─── Build modal HTML ─── */
+function buildSRModal() {
+  /* remove old */
+  document.getElementById('srOverlay')?.remove();
+
+  const ov = document.createElement('div');
+  ov.id = 'srOverlay';
+  ov.className = 'sr-overlay';
+  ov.innerHTML = `
+    <div class="sr-modal" id="srModal" role="dialog" aria-modal="true" aria-label="طلب خدمة جديدة">
+      <!-- Header -->
+      <div class="sr-header">
+        <div class="sr-header-left">
+          <div class="sr-header-icon">📩</div>
+          <div>
+            <h3>طلب خدمة جديدة</h3>
+            <p>أرسل تفاصيل طلبك وسيتواصل معك فريقنا خلال 24 ساعة</p>
+          </div>
+        </div>
+        <button class="sr-close" id="srClose" title="إغلاق">✕</button>
+      </div>
+
+      <!-- Steps -->
+      <div class="sr-steps" id="srSteps">
+        <div class="sr-step active" id="srStep1">
+          <div class="sr-step-num">1</div>
+          <span>الخدمة</span>
+        </div>
+        <div class="sr-step-connector" id="srConn1"></div>
+        <div class="sr-step" id="srStep2">
+          <div class="sr-step-num">2</div>
+          <span>التفاصيل</span>
+        </div>
+        <div class="sr-step-connector" id="srConn2"></div>
+        <div class="sr-step" id="srStep3">
+          <div class="sr-step-num">3</div>
+          <span>المراجعة</span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="sr-body" id="srBody"></div>
+
+      <!-- Footer -->
+      <div class="sr-footer">
+        <div class="sr-footer-left" id="srFooterNote">اختر نوع الخدمة للمتابعة</div>
+        <div class="sr-btn-row">
+          <button class="sr-btn" id="srBack" style="display:none;">→ رجوع</button>
+          <button class="sr-btn primary" id="srNext" disabled>التالي ←</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(ov);
+
+  /* events */
+  ov.addEventListener('click', e => { if (e.target === ov) closeSRModal(); });
+  document.getElementById('srClose').addEventListener('click', closeSRModal);
+  document.getElementById('srNext').addEventListener('click', srNextStep);
+  document.getElementById('srBack').addEventListener('click', srPrevStep);
+
+  srRenderStep(1);
+}
+
+function closeSRModal() {
+  const ov = document.getElementById('srOverlay');
+  if (!ov) return;
+  ov.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => ov.remove(), 280);
+}
+
+/* ─── Render step content ─── */
+function srRenderStep(step) {
+  srState.step = step;
+  const body = document.getElementById('srBody');
+  const btnNext = document.getElementById('srNext');
+  const btnBack = document.getElementById('srBack');
+  const note   = document.getElementById('srFooterNote');
+
+  /* update step indicators */
+  [1,2,3].forEach(i => {
+    const el = document.getElementById(`srStep${i}`);
+    el.classList.toggle('active', i === step);
+    el.classList.toggle('done', i < step);
+    el.querySelector('.sr-step-num').textContent = i < step ? '✓' : i;
+  });
+  document.getElementById('srConn1').classList.toggle('done', step > 1);
+  document.getElementById('srConn2').classList.toggle('done', step > 2);
+
+  btnBack.style.display = step > 1 && step < 4 ? 'inline-flex' : 'none';
+
+  if (step === 1) {
+    /* ── Step 1: Choose service ── */
+    btnNext.textContent = 'التالي ←';
+    btnNext.disabled = !srState.serviceId;
+    note.textContent = 'اختر نوع الخدمة للمتابعة';
+
+    body.innerHTML = `
+      <p style="margin:0 0 14px;font-size:0.85rem;color:var(--muted);">أي خدمة تحتاجها؟</p>
+      <div class="sr-service-grid" id="srServiceGrid">
+        ${srServices.map(s => `
+          <div class="sr-service-card ${srState.serviceId === s.id ? 'selected' : ''}"
+               data-id="${s.id}" data-name="${s.name}">
+            <div class="sr-service-icon">${s.icon}</div>
+            <div class="sr-service-name">${s.name}</div>
+            <div class="sr-service-desc">${s.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    document.querySelectorAll('.sr-service-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.sr-service-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        srState.serviceId = parseInt(card.dataset.id);
+        srState.serviceName = card.dataset.name;
+        document.getElementById('srNext').disabled = false;
+        note.textContent = `تم اختيار: ${card.dataset.name}`;
+      });
+    });
+
+  } else if (step === 2) {
+    /* ── Step 2: Details ── */
+    btnNext.textContent = 'مراجعة الطلب ←';
+    btnNext.disabled = false;
+    note.textContent = 'الحقول المشار إليها بـ * مطلوبة';
+
+    const d = srState.data;
+    body.innerHTML = `
+      <div class="sr-field">
+        <label>عنوان الطلب <span class="sr-req">*</span></label>
+        <input class="sr-input" id="srTitle" placeholder="مثال: موقع تعريفي بـ 5 صفحات"
+          value="${d.title || ''}" maxlength="120">
+        <div class="sr-err-msg" id="srTitleErr">يرجى إدخال عنوان الطلب</div>
+      </div>
+
+      <div class="sr-field">
+        <label>وصف الخدمة المطلوبة <span class="sr-req">*</span></label>
+        <textarea class="sr-textarea" id="srDesc" rows="4"
+          placeholder="اشرح احتياجاتك بالتفصيل: عدد الصفحات، الألوان المطلوبة، المرجع...">${d.description || ''}</textarea>
+        <div class="sr-err-msg" id="srDescErr">يرجى وصف الخدمة</div>
+        <div class="sr-hint" id="srCharCount">0 / 1000 حرف</div>
+      </div>
+
+      <div class="sr-budget-row">
+        <div class="sr-field">
+          <label>الميزانية التقديرية (دينار جزائري)</label>
+          <input class="sr-input" id="srBudget" type="number" min="0"
+            placeholder="10000" value="${d.budget || ''}">
+        </div>
+        <div class="sr-field">
+          <label>المهلة الزمنية (أيام)</label>
+          <input class="sr-input" id="srDeadline" type="number" min="1"
+            placeholder="30" value="${d.deadline || ''}">
+        </div>
+      </div>
+
+      <div class="sr-field">
+        <label>درجة الأولوية</label>
+        <div class="sr-urgency-row">
+          <button type="button" class="sr-urgency-pill ${srState.urgency==='low'?'sel':''}" data-u="low">عادي 🟢</button>
+          <button type="button" class="sr-urgency-pill ${srState.urgency==='normal'?'sel':''}" data-u="normal">متوسط 🟡</button>
+          <button type="button" class="sr-urgency-pill warn ${srState.urgency==='high'?'sel':''}" data-u="high">عاجل 🟠</button>
+          <button type="button" class="sr-urgency-pill danger ${srState.urgency==='urgent'?'sel':''}" data-u="urgent">طارئ 🔴</button>
+        </div>
+      </div>
+
+      <div class="sr-field">
+        <label>ملاحظات إضافية (اختياري)</label>
+        <textarea class="sr-textarea" id="srNotes" rows="2"
+          placeholder="أي معلومات إضافية تريد إضافتها...">${d.notes || ''}</textarea>
+      </div>
+    `;
+
+    /* char counter */
+    const desc = document.getElementById('srDesc');
+    const counter = document.getElementById('srCharCount');
+    const updateCount = () => { counter.textContent = `${desc.value.length} / 1000 حرف`; };
+    desc.addEventListener('input', updateCount);
+    updateCount();
+
+    /* urgency pills */
+    document.querySelectorAll('.sr-urgency-pill').forEach(p => {
+      p.addEventListener('click', () => {
+        document.querySelectorAll('.sr-urgency-pill').forEach(x => x.classList.remove('sel'));
+        p.classList.add('sel');
+        srState.urgency = p.dataset.u;
+      });
+    });
+
+  } else if (step === 3) {
+    /* ── Step 3: Review & Submit ── */
+    btnNext.textContent = 'إرسال الطلب ✓';
+    btnNext.disabled = false;
+    note.textContent = 'راجع تفاصيل طلبك قبل الإرسال';
+
+    const urgencyLabels = { low: 'عادي 🟢', normal: 'متوسط 🟡', high: 'عاجل 🟠', urgent: 'طارئ 🔴' };
+    const d = srState.data;
+    body.innerHTML = `
+      <p style="margin:0 0 14px;font-size:0.85rem;color:var(--muted);">تأكد من صحة البيانات قبل الإرسال.</p>
+      <div class="sr-summary">
+        <div class="sr-summary-row">
+          <span class="key">🛠 الخدمة</span>
+          <span class="val">${srState.serviceName}</span>
+        </div>
+        <div class="sr-summary-row">
+          <span class="key">📌 العنوان</span>
+          <span class="val">${d.title}</span>
+        </div>
+        <div class="sr-summary-row">
+          <span class="key">📝 الوصف</span>
+          <span class="val" style="max-width:320px;word-break:break-word;">${d.description.slice(0,120)}${d.description.length>120?'...':''}</span>
+        </div>
+        ${d.budget ? `<div class="sr-summary-row"><span class="key">💰 الميزانية</span><span class="val">${Number(d.budget).toLocaleString('ar-DZ')} دج</span></div>` : ''}
+        ${d.deadline ? `<div class="sr-summary-row"><span class="key">⏱ المهلة</span><span class="val">${d.deadline} يوم</span></div>` : ''}
+        <div class="sr-summary-row">
+          <span class="key">🎯 الأولوية</span>
+          <span class="val">${urgencyLabels[srState.urgency]}</span>
+        </div>
+        ${d.notes ? `<div class="sr-summary-row"><span class="key">📎 ملاحظات</span><span class="val">${d.notes}</span></div>` : ''}
+      </div>
+    `;
+
+  } else if (step === 4) {
+    /* ── Step 4: Success ── */
+    btnNext.style.display = 'none';
+    btnBack.style.display = 'none';
+    note.textContent = '';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'sr-btn primary';
+    closeBtn.textContent = 'إغلاق';
+    closeBtn.onclick = closeSRModal;
+    document.querySelector('.sr-btn-row').appendChild(closeBtn);
+
+    body.innerHTML = `
+      <div class="sr-success-anim">
+        <div class="check-circle">✓</div>
+        <h4>تم إرسال الطلب بنجاح!</h4>
+        <p>سيقوم فريقنا بمراجعة طلبك والتواصل معك خلال 24 ساعة عمل.<br>يمكنك متابعة حالة طلبك من لوحة التحكم.</p>
+      </div>
+    `;
+    loadStats();
+  }
+}
+
+/* ─── Next step logic ─── */
+async function srNextStep() {
+  const step = srState.step;
+
+  if (step === 2) {
+    /* validate */
+    const title = document.getElementById('srTitle')?.value.trim();
+    const desc  = document.getElementById('srDesc')?.value.trim();
+    let valid = true;
+    if (!title) {
+      document.getElementById('srTitle').classList.add('error');
+      document.getElementById('srTitleErr').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('srTitle').classList.remove('error');
+      document.getElementById('srTitleErr').classList.remove('show');
+    }
+    if (!desc || desc.length < 10) {
+      document.getElementById('srDesc').classList.add('error');
+      document.getElementById('srDescErr').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('srDesc').classList.remove('error');
+      document.getElementById('srDescErr').classList.remove('show');
+    }
+    if (!valid) return;
+
+    srState.data = {
+      title,
+      description: desc,
+      budget: document.getElementById('srBudget')?.value || null,
+      deadline: document.getElementById('srDeadline')?.value || null,
+      notes: document.getElementById('srNotes')?.value.trim() || ''
+    };
+    srRenderStep(3);
+    return;
+  }
+
+  if (step === 3) {
+    /* submit */
+    const btn = document.getElementById('srNext');
+    btn.disabled = true;
+    btn.innerHTML = 'جارٍ الإرسال... <span class="spin">⟳</span>';
+
+    try {
+      const payload = {
+        service_id: srState.serviceId,
+        title: srState.data.title,
+        description: srState.data.description,
+        budget: srState.data.budget ? parseFloat(srState.data.budget) : null,
+        deadline_days: srState.data.deadline ? parseInt(srState.data.deadline) : null,
+        priority: srState.urgency,
+        notes: srState.data.notes || undefined
+      };
+      const r = await fetch(`${API_ORIGIN}/api/dashboard/service-request`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.message || 'فشل الإرسال');
+      }
+      srRenderStep(4);
+    } catch (e) {
+      toast(e.message || 'تعذر الإرسال، حاول مرة أخرى', false);
+      btn.disabled = false;
+      btn.textContent = 'إرسال الطلب ✓';
+    }
+    return;
+  }
+
+  srRenderStep(step + 1);
+}
+
+function srPrevStep() {
+  if (srState.step > 1) srRenderStep(srState.step - 1);
+}
+
+async function viewInvoices() {
+  try {
+    const r = await fetch(`${API_ORIGIN}/api/dashboard/invoices`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!r.ok) throw new Error();
+    const ct = r.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) throw new Error('استجابة غير صالحة من الخادم');
+    const result = await r.json().catch(() => { throw new Error('فشل تحليل البيانات'); });
+    const inv = result.data || [];
+    if (!inv.length) { toast('لا توجد فواتير', false); return; }
+    let txt = '📄 الفواتير\n' + '─'.repeat(38) + '\n\n';
+    inv.forEach((v,i) => {
+      txt += `${i+1}. ${v.title}\n   ${v.amount} دينار — ${v.payment_status}\n   ${new Date(v.invoice_date).toLocaleDateString('ar-DZ')}\n\n`;
+    });
+    alert(txt);
+  } catch { toast('خطأ في تحميل الفواتير', false); }
+}
+
+document.getElementById('btnNewRequest').addEventListener('click', () => { window.location.href = 'new-service.html'; });
+document.getElementById('btnViewInvoices').addEventListener('click', viewInvoices);
+document.getElementById('btnRefresh').addEventListener('click', () => loadDashboardData(true));
+
+/* ══════════════════════════════════════════════════════
+   AUTO-REFRESH STATS — Real-time from API
+   Strategy: poll every 30s + Socket.io push if available
+══════════════════════════════════════════════════════ */
+
+let statsInterval = null;
+let statsVisible = true;
+
+/* Pause polling when tab is hidden, resume when visible */
+document.addEventListener('visibilitychange', () => {
+  statsVisible = !document.hidden;
+  if (statsVisible) loadStats(); /* immediate refresh on return */
+});
+
+function startAutoRefresh(intervalMs = 30000) {
+  stopAutoRefresh();
+  statsInterval = setInterval(() => {
+    if (statsVisible) loadStats();
+  }, intervalMs);
+}
+function stopAutoRefresh() {
+  if (statsInterval) { clearInterval(statsInterval); statsInterval = null; }
+}
+
+/* Try to subscribe to Socket.io for push updates */
+function trySocketRefresh() {
+  if (typeof io === 'undefined') return;
+  try {
+    const sock = io(API_ORIGIN, {
+      auth: { token },
+      transports: ['websocket'],
+      reconnectionAttempts: 3,
+      timeout: 5000
+    });
+    sock.on('stats:update', () => {
+      if (statsVisible) loadStats();
+    });
+    sock.on('connect', () => {
+      sock.emit('join:dashboard');
+    });
+  } catch {}
+}
+
+/* Countdown indicator in the refresh button */
+function startCountdown(seconds = 30) {
+  const btn = document.getElementById('btnRefresh');
+  if (!btn) return;
+  let remaining = seconds;
+  const tick = () => {
+    const el = btn.querySelector('.cd') || (() => {
+      const s = document.createElement('span');
+      s.className = 'cd';
+      s.style.cssText = 'font-size:0.7rem;color:var(--muted);margin-inline-start:4px;';
+      btn.appendChild(s);
+      return s;
+    })();
+    el.textContent = `(${remaining}ث)`;
+    remaining--;
+    if (remaining < 0) {
+      el.textContent = '';
+      clearInterval(cdInterval);
+    }
+  };
+  const cdInterval = setInterval(tick, 1000);
+  tick();
+}
+
+/* ══════════════════════════════════
+   Init
+══════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboardData();
+  loadUserInfo();
+  startAutoRefresh(30000);
+  startCountdown(30);
+  trySocketRefresh();
+
+  /* restart countdown each time stats refresh */
+  const _origLoadStats = loadStats;
+  /* patch loadStats to restart countdown after each call */
+});
+</script>
+<script src="js/dynamicForms.js"></script>
+<script src="js/blobs.js"></script>
+</body>
+</html>
+
+

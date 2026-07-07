@@ -1,0 +1,1852 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>طلب خدمة جديدة | MEDS Digital Services</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ─── PAGE LAYOUT ─── */
+    .page-shell {
+      min-height: 100vh;
+      background: var(--bg);
+      display: grid;
+      grid-template-rows: var(--header-h) 1fr;
+    }
+
+    .page-body {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      height: calc(100vh - var(--header-h));
+      overflow: hidden;
+    }
+
+    /* ─── LEFT PROGRESS RAIL ─── */
+    .progress-rail {
+      background: linear-gradient(160deg, #091e1d 0%, #0c2826 60%, #091c1b 100%);
+      padding: 48px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    .progress-rail::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 40% at 100% 10%, rgba(13,148,136,0.30), transparent),
+        radial-gradient(ellipse 50% 30% at 10% 90%, rgba(37,99,235,0.15), transparent);
+      pointer-events: none;
+    }
+
+    .rail-brand {
+      display: flex; align-items: center; gap: 11px;
+      font-weight: 900; font-size: 1rem; color: #fff;
+      margin-bottom: 48px;
+      position: relative; z-index: 1;
+      text-decoration: none;
+    }
+
+    .rail-title {
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.3;
+      margin: 0 0 8px;
+      position: relative; z-index: 1;
+    }
+
+    .rail-sub {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      margin: 0 0 40px;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── STEP INDICATORS ─── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative; z-index: 1;
+      flex: 1;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      position: relative;
+      padding-bottom: 32px;
+    }
+
+    .step-item:last-child { padding-bottom: 0; }
+
+    .step-item::before {
+      content: '';
+      position: absolute;
+      right: 19px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 32px);
+      background: rgba(255,255,255,0.1);
+      transition: background 0.4s;
+    }
+
+    .step-item:last-child::before { display: none; }
+    .step-item.done::before { background: rgba(13,148,136,0.6); }
+    .step-item.active::before { background: rgba(255,255,255,0.1); }
+
+    .step-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-weight: 900; font-size: 0.88rem;
+      flex-shrink: 0;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.45);
+    }
+
+    .step-item.done .step-dot {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(13,148,136,0.45);
+    }
+
+    .step-item.active .step-dot {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+      box-shadow: 0 0 0 6px rgba(255,255,255,0.06);
+    }
+
+    .step-info { padding-top: 8px; }
+    .step-name {
+      font-weight: 700; font-size: 0.95rem;
+      color: rgba(255,255,255,0.45);
+      transition: color 0.3s;
+    }
+    .step-item.active .step-name { color: #fff; }
+    .step-item.done .step-name { color: rgba(255,255,255,0.75); }
+
+    .step-desc {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.28);
+      margin-top: 2px;
+      transition: color 0.3s;
+    }
+    .step-item.active .step-desc { color: rgba(255,255,255,0.5); }
+    .step-item.done .step-desc { color: rgba(255,255,255,0.35); }
+
+    /* ─── MAIN FORM AREA ─── */
+    .form-area {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .form-topbar {
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-glass);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .topbar-breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.88rem; color: var(--muted);
+    }
+
+    .topbar-breadcrumb a { color: var(--primary-dark); font-weight: 700; }
+    .topbar-breadcrumb a:hover { text-decoration: underline; }
+    .topbar-breadcrumb span { color: var(--muted); }
+
+    .topbar-progress {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 0.85rem; color: var(--muted);
+    }
+
+    .progress-track {
+      width: 120px; height: 4px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #34d399);
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    /* ─── FORM PANELS ─── */
+    .form-panels {
+      flex: 1;
+      padding: 48px;
+    }
+
+    .form-panel {
+      display: none;
+      animation: panelIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .form-panel.active { display: block; }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateX(-16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .panel-header { margin-bottom: 36px; }
+    .panel-eyebrow {
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--primary-dark); letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .panel-header h2 {
+      margin: 0 0 8px;
+      font-size: 1.9rem; font-weight: 900; letter-spacing: -0.02em;
+    }
+    .panel-header p { margin: 0; color: var(--muted); font-size: 0.98rem; }
+
+    /* ─── DOMAIN CARDS (3 big choices) ─── */
+    .domain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .domain-card {
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 22px 22px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .domain-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--primary-glow);
+      opacity: 0; transition: opacity 0.2s;
+    }
+
+    .domain-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow); }
+    .domain-card:hover::before { opacity: 1; }
+
+    .domain-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13,148,136,0.18), var(--shadow-sm);
+    }
+    .domain-card.selected::before { opacity: 1; }
+
+    .domain-card .pick-check {
+      position: absolute; top: 12px; left: 12px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--primary);
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(13,148,136,0.5);
+    }
+    .domain-card .pick-check svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; }
+    .domain-card.selected .pick-check { display: flex; }
+
+    .domain-icon { font-size: 2.6rem; margin-bottom: 14px; position: relative; z-index: 1; display: block; }
+    .domain-name { font-weight: 900; font-size: 1.05rem; margin-bottom: 8px; position: relative; z-index: 1; }
+    .domain-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; position: relative; z-index: 1; }
+    .domain-arrow {
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--primary-dark); position: relative; z-index: 1;
+      opacity: 0; transform: translateY(4px);
+      transition: all 0.2s;
+    }
+    .domain-card:hover .domain-arrow,
+    .domain-card.selected .domain-arrow { opacity: 1; transform: translateY(0); }
+
+    /* ─── SELECTED DOMAIN BANNER ─── */
+    .selected-domain-banner {
+      display: none;
+      margin-top: 24px;
+      padding: 18px 22px;
+      background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(13,148,136,0.03));
+      border: 1.5px solid rgba(13,148,136,0.25);
+      border-radius: var(--radius);
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      animation: panelIn 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .selected-domain-banner.visible { display: flex; }
+
+    .banner-info {
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .banner-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--primary);
+      display: grid; place-items: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 14px rgba(13,148,136,0.4);
+    }
+
+    .banner-text .banner-label {
+      font-size: 0.75rem; color: var(--muted);
+      font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .banner-text .banner-value {
+      font-size: 1.05rem; font-weight: 800;
+      color: var(--text);
+    }
+
+    .banner-change {
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--primary-dark); background: none; border: none;
+      cursor: pointer; padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(13,148,136,0.3);
+      transition: all 0.15s;
+    }
+    .banner-change:hover { background: rgba(13,148,136,0.08); }
+
+    /* ─── ENHANCED FORM FIELDS ─── */
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section-title {
+      font-size: 0.78rem; font-weight: 800;
+      color: var(--muted); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    .field {
+      display: grid; gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.87rem; font-weight: 700;
+      color: var(--text); display: flex; align-items: center; gap: 6px;
+    }
+
+    .field .required {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #ef4444; display: inline-block;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      font: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .field textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-glow);
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--muted); }
+
+    .field .hint {
+      font-size: 0.8rem; color: var(--muted);
+    }
+
+    /* ─── OPTION CHIPS (for checkboxes) ─── */
+    .chips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .chip {
+      position: relative;
+      padding: 14px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .chip:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chip input[type="checkbox"],
+    .chip input[type="radio"] {
+      width: 18px; height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .chip.checked {
+      border-color: var(--primary);
+      background: rgba(13,148,136,0.06);
+      box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+    }
+
+    /* ─── BUDGET CARDS (instead of slider) ─── */
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .budget-card {
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .budget-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--primary-glow);
+      opacity: 0; transition: opacity 0.2s;
+    }
+
+    .budget-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .budget-card:hover::before { opacity: 1; }
+
+    .budget-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13,148,136,0.18), var(--shadow-sm);
+    }
+    .budget-card.selected::before { opacity: 1; }
+
+    .budget-card .pick-check {
+      position: absolute; top: 10px; left: 10px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--primary);
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(13,148,136,0.5);
+    }
+    .budget-card .pick-check svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 2.5; fill: none; }
+    .budget-card.selected .pick-check { display: flex; }
+
+    .budget-card .budget-icon {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+
+    .budget-card .budget-value {
+      font-size: 1.1rem; font-weight: 900;
+      color: var(--text);
+      margin-bottom: 4px;
+      position: relative; z-index: 1;
+    }
+
+    .budget-card .budget-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      position: relative; z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .budget-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── FILE UPLOAD ─── */
+    .upload-zone {
+      border: 2px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragging {
+      border-color: var(--primary);
+      background: rgba(13,148,136,0.04);
+    }
+
+    .upload-icon {
+      font-size: 2.2rem; margin-bottom: 12px;
+      display: block;
+    }
+
+    .upload-text { font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .upload-hint { font-size: 0.83rem; color: var(--muted); }
+
+    .upload-btn-link {
+      color: var(--primary-dark); font-weight: 700;
+      text-decoration: underline; cursor: pointer;
+    }
+
+    .uploaded-files {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-top: 14px;
+    }
+
+    .uploaded-file {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      font-size: 0.87rem;
+    }
+
+    .uploaded-file .file-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .uploaded-file .file-name { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .uploaded-file .file-size { color: var(--muted); font-size: 0.78rem; }
+    .uploaded-file .file-remove {
+      width: 24px; height: 24px;
+      border: none; background: none;
+      cursor: pointer; color: var(--muted);
+      font-size: 1.1rem; display: grid; place-items: center;
+      border-radius: 50%; transition: all 0.15s;
+    }
+    .uploaded-file .file-remove:hover { background: #fee2e2; color: #dc2626; }
+
+    /* ─── REVIEW SUMMARY ─── */
+    .review-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .review-card-title {
+      font-size: 0.78rem; font-weight: 800;
+      color: var(--muted); letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .review-card-title button {
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--primary-dark); background: none; border: none;
+      cursor: pointer; text-decoration: underline;
+    }
+
+    .review-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .review-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .review-row-label { font-size: 0.88rem; color: var(--muted); min-width: 140px; }
+    .review-row-value { font-weight: 700; font-size: 0.92rem; text-align: left; flex: 1; }
+
+    .review-chips {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .review-chip {
+      padding: 4px 10px;
+      background: rgba(13,148,136,0.1);
+      color: var(--primary-dark);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* ─── FOOTER NAVIGATION ─── */
+    .form-footer-nav {
+      padding: 24px 48px;
+      border-top: 1px solid var(--line);
+      background: var(--surface-glass);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; bottom: 0; z-index: 10;
+    }
+
+    .footer-left { display: flex; align-items: center; gap: 12px; }
+    .footer-step-info { font-size: 0.85rem; color: var(--muted); }
+    .footer-step-info strong { color: var(--text); }
+
+    /* ─── SUCCESS STATE ─── */
+    .success-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 48px;
+      flex: 1;
+    }
+
+    .success-panel.visible { display: flex; }
+
+    .success-checkmark {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #34d399);
+      display: grid; place-items: center;
+      font-size: 2.4rem;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 32px rgba(13,148,136,0.4);
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .success-panel h2 { margin: 0 0 12px; font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em; }
+    .success-panel p { color: var(--muted); max-width: 460px; line-height: 1.7; font-size: 1rem; margin: 0 0 40px; }
+
+    .success-ref {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-family: monospace; font-size: 1.1rem; font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 40px;
+      letter-spacing: 0.05em;
+    }
+
+    .success-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+    /* ─── MESSAGE ─── */
+    .message {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1.5px solid;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 920px) {
+      .page-body { grid-template-columns: 1fr; }
+      .progress-rail { display: none; }
+      .form-panels { padding: 28px 24px; }
+      .form-topbar, .form-footer-nav { padding: 16px 24px; }
+      .domain-grid { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-shell">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="client-dashboard.html" aria-label="MEDS Digital Services">
+        <span class="brand-mark">M</span>
+        <span>MEDS Digital Services</span>
+      </a>
+      <div class="nav-links">
+        <button class="theme-toggle" id="themeToggle" title="تبديل المظهر">🌙</button>
+        <a class="btn btn-secondary" href="client-dashboard.html">لوحة التحكم</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="page-body">
+
+    <!-- LEFT RAIL: Step Progress -->
+    <aside class="progress-rail">
+      <a class="rail-brand" href="client-dashboard.html">
+        <span class="brand-mark">M</span>
+        <span>MEDS</span>
+      </a>
+
+      <p class="rail-title">طلب خدمة جديدة</p>
+      <p class="rail-sub">اتبع الخطوات لتقديم طلب دقيق ومنظم.</p>
+
+      <div class="steps" id="stepsNav">
+        <div class="step-item active" data-step="1">
+          <div class="step-dot">1</div>
+          <div class="step-info">
+            <div class="step-name">اختيار المجال</div>
+            <div class="step-desc">حدد مجال الخدمة</div>
+          </div>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-dot">2</div>
+          <div class="step-info">
+            <div class="step-name" id="step2Name">المعلومات الأساسية</div>
+            <div class="step-desc" id="step2Desc">بيانات أولية</div>
+          </div>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-dot">3</div>
+          <div class="step-info">
+            <div class="step-name" id="step3Name">التفاصيل</div>
+            <div class="step-desc" id="step3Desc">متطلبات دقيقة</div>
+          </div>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-dot">4</div>
+          <div class="step-info">
+            <div class="step-name" id="step4Name">الميزانية</div>
+            <div class="step-desc" id="step4Desc">التقديرات المالية</div>
+          </div>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="step-dot">✓</div>
+          <div class="step-info">
+            <div class="step-name">المراجعة والإرسال</div>
+            <div class="step-desc">تأكيد بيانات الطلب</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Form Area -->
+    <div class="form-area" id="formArea">
+
+      <!-- Top Bar -->
+      <div class="form-topbar">
+        <div class="topbar-breadcrumb">
+          <a href="client-dashboard.html">الرئيسية</a>
+          <span>›</span>
+          <span id="breadcrumbStep">اختيار المجال</span>
+        </div>
+        <div class="topbar-progress">
+          <span id="progressLabel">الخطوة 1 من 5</span>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:20%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Panels Container -->
+      <div class="form-panels" id="formPanels">
+
+        <!-- ── STEP 1: Domain Selection ── -->
+        <div class="form-panel active" id="panel-1">
+          <div class="panel-header">
+            <div class="panel-eyebrow">الخطوة الأولى</div>
+            <h2>اختر مجال الخدمة</h2>
+            <p>حدد المجال الذي يناسب احتياجك، وستتخصص الأسئلة التالية وفقاً له.</p>
+          </div>
+
+          <div class="domain-grid" id="domainGrid">
+            <div class="domain-card" data-domain="dev" onclick="selectDomain(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="domain-icon">💻</div>
+              <div class="domain-name">البرمجة والتطوير</div>
+              <div class="domain-desc">مواقع، تطبيقات، وأنظمة مخصصة</div>
+              <div class="domain-arrow">متابعة ←</div>
+            </div>
+
+            <div class="domain-card" data-domain="mkt" onclick="selectDomain(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="domain-icon">📣</div>
+              <div class="domain-name">التسويق الرقمي</div>
+              <div class="domain-desc">حملات، محتوى، وسوشيال ميديا</div>
+              <div class="domain-arrow">متابعة ←</div>
+            </div>
+
+            <div class="domain-card" data-domain="sec" onclick="selectDomain(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="domain-icon">🔒</div>
+              <div class="domain-name">الأمن السيبراني</div>
+              <div class="domain-desc">فحص، حماية، وتدقيق أمني</div>
+              <div class="domain-arrow">متابعة ←</div>
+            </div>
+          </div>
+
+          <div class="selected-domain-banner" id="selectedBanner">
+            <div class="banner-info">
+              <div class="banner-icon" id="bannerIcon">💻</div>
+              <div class="banner-text">
+                <div class="banner-label">المجال المختار</div>
+                <div class="banner-value" id="bannerValue">البرمجة والتطوير</div>
+              </div>
+            </div>
+            <button class="banner-change" onclick="changeDomain()">تغيير</button>
+          </div>
+
+          <div class="message error" id="domainError" style="display:none; margin-top:16px;">
+            يرجى اختيار المجال للمتابعة.
+          </div>
+        </div>
+
+        <!-- ── STEP 2: Dynamic Content ── -->
+        <div class="form-panel" id="panel-2">
+          <div class="panel-header">
+            <div class="panel-eyebrow" id="step2Eyebrow">الخطوة الثانية</div>
+            <h2 id="step2Title">المعلومات الأساسية</h2>
+            <p id="step2Subtitle">ابدأ بإدخال البيانات الأساسية لمشروعك.</p>
+          </div>
+          <div id="step2Content"></div>
+        </div>
+
+        <!-- ── STEP 3: Dynamic Content ── -->
+        <div class="form-panel" id="panel-3">
+          <div class="panel-header">
+            <div class="panel-eyebrow" id="step3Eyebrow">الخطوة الثالثة</div>
+            <h2 id="step3Title">التفاصيل والمتطلبات</h2>
+            <p id="step3Subtitle">كلما كانت التفاصيل أدق، كان العرض المقدم لك أدق وأسرع.</p>
+          </div>
+          <div id="step3Content"></div>
+        </div>
+
+        <!-- ── STEP 4: Dynamic Content ── -->
+        <div class="form-panel" id="panel-4">
+          <div class="panel-header">
+            <div class="panel-eyebrow" id="step4Eyebrow">الخطوة الرابعة</div>
+            <h2 id="step4Title">الميزانية</h2>
+            <p id="step4Subtitle">اختر النطاق المناسب لميزانيتك.</p>
+          </div>
+          <div id="step4Content"></div>
+        </div>
+
+        <!-- ── STEP 5: Review ── -->
+        <div class="form-panel" id="panel-5">
+          <div class="panel-header">
+            <div class="panel-eyebrow">المراجعة النهائية</div>
+            <h2>راجع طلبك قبل الإرسال</h2>
+            <p>تحقق من صحة البيانات، ثم أرسل طلبك — سيصلك رد خلال 24 ساعة.</p>
+          </div>
+
+          <div class="review-card" id="reviewCard1">
+            <div class="review-card-title">
+              المجال المختار
+              <button onclick="goToStep(1)">تعديل</button>
+            </div>
+            <div class="review-row">
+              <span class="review-row-label">المجال</span>
+              <span class="review-row-value" id="rev-domain">—</span>
+            </div>
+          </div>
+
+          <div class="review-card" id="reviewCard2">
+            <div class="review-card-title">
+              <span id="rev-step2-title">المعلومات الأساسية</span>
+              <button onclick="goToStep(2)">تعديل</button>
+            </div>
+            <div id="rev-step2-content"></div>
+          </div>
+
+          <div class="review-card" id="reviewCard3">
+            <div class="review-card-title">
+              <span id="rev-step3-title">التفاصيل</span>
+              <button onclick="goToStep(3)">تعديل</button>
+            </div>
+            <div id="rev-step3-content"></div>
+          </div>
+
+          <div class="review-card" id="reviewCard4">
+            <div class="review-card-title">
+              <span id="rev-step4-title">الميزانية والمرفقات</span>
+              <button onclick="goToStep(4)">تعديل</button>
+            </div>
+            <div id="rev-step4-content"></div>
+          </div>
+
+          <div style="margin-top:20px;">
+            <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer;">
+              <input type="checkbox" id="termsCheck" style="width:18px; height:18px; margin-top:3px; accent-color:var(--primary); cursor:pointer; flex-shrink:0;">
+              <span style="font-size:0.9rem; color:var(--muted); line-height:1.6;">
+                أقرّ بأن البيانات المقدمة صحيحة وأفوّض فريق MEDS بالتواصل معي للمتابعة.
+                <a href="#" style="color:var(--primary-dark); font-weight:700;">الشروط والأحكام</a>
+              </span>
+            </label>
+          </div>
+        </div>
+
+      </div><!-- /form-panels -->
+
+      <!-- SUCCESS STATE -->
+      <div class="success-panel" id="successPanel">
+        <div class="success-checkmark">✓</div>
+        <h2>تم إرسال طلبك بنجاح!</h2>
+        <p>استقبل فريقنا طلبك وسيتواصل معك خلال 24 ساعة عمل لمناقشة التفاصيل وتقديم العرض المناسب.</p>
+        <div class="success-ref">
+          <span>🔖</span>
+          <span id="refNumber">MEDS-2026-0042</span>
+        </div>
+        <div class="success-actions">
+          <a class="btn btn-primary" href="client-dashboard.html">العودة للوحة التحكم</a>
+          <a class="btn btn-secondary" href="new-service.html">طلب خدمة أخرى</a>
+        </div>
+      </div>
+
+      <!-- Footer Nav -->
+      <div class="form-footer-nav" id="footerNav">
+        <div class="footer-left">
+          <button class="btn btn-secondary" id="btnBack" onclick="goBack()" style="display:none;">
+            ← السابق
+          </button>
+          <span class="footer-step-info">
+            <strong id="footerStepName">اختيار المجال</strong>
+          </span>
+        </div>
+        <button class="btn btn-primary" id="btnNext" onclick="goNext()">
+          التالي ←
+        </button>
+      </div>
+
+    </div><!-- /form-area -->
+
+  </div><!-- /page-body -->
+</div><!-- /page-shell -->
+
+<script src="js/config.js"></script>
+<script>
+// ─── THEME ───
+const toggle = document.getElementById('themeToggle');
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  toggle.textContent = '☀️';
+}
+toggle.addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark-mode');
+  toggle.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+// ─── STATE ───
+let currentStep = 1;
+const totalSteps = 5;
+let selectedDomain = null;
+let uploadedFiles = [];
+let cachedServices = null;
+
+const API_ORIGIN = API_CONFIG.BASE.replace('/api', '');
+const apiUrl = (path) => `${API_ORIGIN}${path}`;
+
+function requireAuthToken() {
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return null;
+  }
+  return token;
+}
+
+const domainConfig = {
+  dev: {
+    label: 'البرمجة والتطوير',
+    icon: '💻',
+    steps: {
+      2: {
+        eyebrow: 'الخطوة الثانية',
+        title: 'معلومات المشروع',
+        subtitle: 'عرّفنا بمشروعك التقني بشكل موجز.',
+        sidebar: { name: 'معلومات المشروع', desc: 'اسم ونوع المشروع' },
+        reviewTitle: 'معلومات المشروع'
+      },
+      3: {
+        eyebrow: 'الخطوة الثالثة',
+        title: 'تفاصيل المشروع',
+        subtitle: 'كلما كانت التفاصيل أدق، كان العرض المقدم لك أدق وأسرع.',
+        sidebar: { name: 'التفاصيل', desc: 'الهدف والميزات' },
+        reviewTitle: 'تفاصيل المشروع'
+      },
+      4: {
+        eyebrow: 'الخطوة الرابعة',
+        title: 'الميزانية والمرفقات',
+        subtitle: 'حدد نطاق ميزانيتك وارفع أي ملفات مساعدة.',
+        sidebar: { name: 'الميزانية والمرفقات', desc: 'التقديرات المالية' },
+        reviewTitle: 'الميزانية والمرفقات'
+      }
+    }
+  },
+  mkt: {
+    label: 'التسويق الرقمي',
+    icon: '📣',
+    steps: {
+      2: {
+        eyebrow: 'الخطوة الثانية',
+        title: 'معلومات النشاط',
+        subtitle: 'عرّفنا بنشاطك التجاري ومجال عملك.',
+        sidebar: { name: 'معلومات النشاط', desc: 'اسم الشركة والقطاع' },
+        reviewTitle: 'معلومات النشاط'
+      },
+      3: {
+        eyebrow: 'الخطوة الثالثة',
+        title: 'الأهداف والقنوات',
+        subtitle: 'ما الذي تسعى لتحقيقه؟ وعلى أي القنوات؟',
+        sidebar: { name: 'الأهداف والقنوات', desc: 'الغاية والوسائل' },
+        reviewTitle: 'الأهداف والقنوات'
+      },
+      4: {
+        eyebrow: 'الخطوة الرابعة',
+        title: 'ميزانية الإعلانات',
+        subtitle: 'حدد ميزانيتك الإعلانية الشهرية المتوقعة.',
+        sidebar: { name: 'ميزانية الإعلانات', desc: 'الميزانية التسويقية' },
+        reviewTitle: 'ميزانية الإعلانات'
+      }
+    }
+  },
+  sec: {
+    label: 'الأمن السيبراني',
+    icon: '🔒',
+    steps: {
+      2: {
+        eyebrow: 'الخطوة الثانية',
+        title: 'نوع الهدف',
+        subtitle: 'ما هو النظام أو الأصل الذي تريد تقييمه أو حمايته؟',
+        sidebar: { name: 'نوع الهدف', desc: 'الأصل المستهدف' },
+        reviewTitle: 'نوع الهدف'
+      },
+      3: {
+        eyebrow: 'الخطوة الثالثة',
+        title: 'نوع الخدمة والمعلومات التقنية',
+        subtitle: 'حدد الخدمة المطلوبة وقدّم التفاصيل التقنية.',
+        sidebar: { name: 'الخدمة والتقنيات', desc: 'الخدمة والمعلومات' },
+        reviewTitle: 'الخدمة والتقنيات'
+      },
+      4: {
+        eyebrow: 'الخطوة الرابعة',
+        title: 'المرفقات',
+        subtitle: 'ارفع أي وثائق تقنية تساعد فريقنا على فهم البنية.',
+        sidebar: { name: 'المرفقات', desc: 'التقارير والمخططات' },
+        reviewTitle: 'المرفقات'
+      }
+    }
+  }
+};
+
+// ─── STEP CONTENT TEMPLATES ───
+function getStepContent(domain, step) {
+  if (domain === 'dev') {
+    if (step === 2) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">معلومات المشروع</div>
+          <div class="field-row">
+            <div class="field">
+              <label>اسم المشروع <span class="required"></span></label>
+              <input type="text" id="projectName" placeholder="مثال: متجر إلكتروني للمنتجات الغذائية">
+              <span class="hint">اختر اسماً واضحاً يعبّر عن هدف المشروع</span>
+            </div>
+            <div class="field">
+              <label>نوع المشروع <span class="required"></span></label>
+              <select id="projectType">
+                <option value="">-- اختر النوع --</option>
+                <option value="website">موقع ويب</option>
+                <option value="ecommerce">متجر إلكتروني</option>
+                <option value="webapp">تطبيق ويب</option>
+                <option value="mobile">تطبيق هاتف</option>
+                <option value="system">نظام إدارة</option>
+                <option value="api">API</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (step === 3) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">الهدف والمستخدمون</div>
+          <div class="field field-full">
+            <label>ما الهدف من المشروع؟ <span class="required"></span></label>
+            <textarea id="projectGoal" rows="3" placeholder="اشرح باختصار ما الذي تريد تحقيقه من هذا المشروع..."></textarea>
+          </div>
+          <div class="field field-full" style="margin-top:14px;">
+            <label>من هم المستخدمون المستهدفون؟</label>
+            <input type="text" id="targetUsers" placeholder="مثال: العملاء في الجزائر، الفئة العمرية 18-45">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">التصميم والمراجع</div>
+          <div class="field-row">
+            <div class="field">
+              <label>هل يوجد تصميم جاهز؟</label>
+              <select id="hasDesign">
+                <option value="no">لا، أحتاج التصميم من الصفر</option>
+                <option value="partial">لدي أفكار وإطار عام</option>
+                <option value="figma">لدي ملف Figma/XD</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>عدد الصفحات المتوقع</label>
+              <input type="number" id="pagesCount" min="1" placeholder="مثال: 10">
+            </div>
+          </div>
+          <div class="field field-full" style="margin-top:14px;">
+            <label>هل يوجد موقع مشابه؟ (مرجع)</label>
+            <input type="text" id="similarSite" placeholder="مثال: example.com">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">الميزات المطلوبة</div>
+          <div class="chips-grid" id="featuresChips">
+            <label class="chip"><input type="checkbox" value="login"> تسجيل دخول</label>
+            <label class="chip"><input type="checkbox" value="dashboard"> لوحة تحكم</label>
+            <label class="chip"><input type="checkbox" value="payment"> دفع إلكتروني</label>
+            <label class="chip"><input type="checkbox" value="chat"> دردشة</label>
+            <label class="chip"><input type="checkbox" value="notifications"> إشعارات</label>
+          </div>
+        </div>
+      `;
+    }
+    if (step === 4) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">ميزانية المشروع</div>
+          <div class="budget-grid" id="budgetGrid">
+            <div class="budget-card" data-value="lt50" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">💰</div>
+              <div class="budget-value">أقل من 50 ألف</div>
+              <div class="budget-label">DZD</div>
+            </div>
+            <div class="budget-card" data-value="50-100" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">💰💰</div>
+              <div class="budget-value">50 - 100 ألف</div>
+              <div class="budget-label">DZD</div>
+            </div>
+            <div class="budget-card" data-value="100-300" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">💰💰💰</div>
+              <div class="budget-value">100 - 300 ألف</div>
+              <div class="budget-label">DZD</div>
+            </div>
+            <div class="budget-card" data-value="300+" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">💎</div>
+              <div class="budget-value">أكثر من 300 ألف</div>
+              <div class="budget-label">DZD</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">المرفقات (اختياري)</div>
+          <div
+            class="upload-zone"
+            id="uploadZone"
+            onclick="document.getElementById('fileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('dragging')"
+            ondragleave="this.classList.remove('dragging')"
+            ondrop="handleDrop(event)"
+          >
+            <span class="upload-icon">📎</span>
+            <div class="upload-text">اسحب ملفاتك هنا أو <span class="upload-btn-link">تصفح لاختيارها</span></div>
+            <div class="upload-hint">يُقبل: Figma, PDF, صور — الحجم الأقصى: 20MB لكل ملف</div>
+          </div>
+          <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFileSelect(this.files)">
+          <div class="uploaded-files" id="uploadedFiles"></div>
+        </div>
+      `;
+    }
+  }
+
+  if (domain === 'mkt') {
+    if (step === 2) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">معلومات النشاط</div>
+          <div class="field-row">
+            <div class="field">
+              <label>اسم الشركة / النشاط <span class="required"></span></label>
+              <input type="text" id="companyName" placeholder="مثال: مطعم الشام">
+            </div>
+            <div class="field">
+              <label>القطاع <span class="required"></span></label>
+              <select id="sector">
+                <option value="">-- اختر القطاع --</option>
+                <option value="restaurant">مطعم</option>
+                <option value="school">مدرسة</option>
+                <option value="store">متجر</option>
+                <option value="doctor">طبيب</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (step === 3) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">الهدف من الحملة</div>
+          <div class="chips-grid" id="goalsChips">
+            <label class="chip"><input type="checkbox" value="sales"> زيادة المبيعات</label>
+            <label class="chip"><input type="checkbox" value="followers"> زيادة المتابعين</label>
+            <label class="chip"><input type="checkbox" value="visits"> زيادة الزيارات</label>
+            <label class="chip"><input type="checkbox" value="brand"> بناء العلامة التجارية</label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">القنوات المطلوبة</div>
+          <div class="chips-grid" id="channelsChips">
+            <label class="chip"><input type="checkbox" value="facebook"> Facebook</label>
+            <label class="chip"><input type="checkbox" value="instagram"> Instagram</label>
+            <label class="chip"><input type="checkbox" value="tiktok"> TikTok</label>
+            <label class="chip"><input type="checkbox" value="google"> Google Ads</label>
+            <label class="chip"><input type="checkbox" value="linkedin"> LinkedIn</label>
+          </div>
+        </div>
+      `;
+    }
+    if (step === 4) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">ميزانية الإعلانات (شهرياً)</div>
+          <div class="budget-grid" id="budgetGrid">
+            <div class="budget-card" data-value="10k" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">📢</div>
+              <div class="budget-value">10 آلاف</div>
+              <div class="budget-label">DZD / شهرياً</div>
+            </div>
+            <div class="budget-card" data-value="20k" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">📢📢</div>
+              <div class="budget-value">20 ألف</div>
+              <div class="budget-label">DZD / شهرياً</div>
+            </div>
+            <div class="budget-card" data-value="50k" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">📢📢📢</div>
+              <div class="budget-value">50 ألف</div>
+              <div class="budget-label">DZD / شهرياً</div>
+            </div>
+            <div class="budget-card" data-value="more" onclick="selectBudget(this)">
+              <div class="pick-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="budget-icon">💎</div>
+              <div class="budget-value">أكثر</div>
+              <div class="budget-label">حسب الخطة</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  if (domain === 'sec') {
+    if (step === 2) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">نوع الهدف</div>
+          <div class="chips-grid" id="targetChips" data-single="true">
+            <label class="chip"><input type="radio" name="target" value="website"> موقع ويب</label>
+            <label class="chip"><input type="radio" name="target" value="webapp"> تطبيق ويب</label>
+            <label class="chip"><input type="radio" name="target" value="mobile"> تطبيق هاتف</label>
+            <label class="chip"><input type="radio" name="target" value="network"> شبكة محلية</label>
+            <label class="chip"><input type="radio" name="target" value="server"> خادم</label>
+          </div>
+        </div>
+      `;
+    }
+    if (step === 3) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">نوع الخدمة</div>
+          <div class="chips-grid" id="serviceTypeChips" data-single="true">
+            <label class="chip"><input type="radio" name="serviceType" value="pentest"> اختبار اختراق</label>
+            <label class="chip"><input type="radio" name="serviceType" value="audit"> تدقيق أمني</label>
+            <label class="chip"><input type="radio" name="serviceType" value="codereview"> مراجعة كود</label>
+            <label class="chip"><input type="radio" name="serviceType" value="vuln"> تحليل ثغرات</label>
+            <label class="chip"><input type="radio" name="serviceType" value="networksec"> تأمين شبكة</label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">معلومات تقنية</div>
+          <div class="field-row">
+            <div class="field">
+              <label>رابط الموقع / IP</label>
+              <input type="text" id="targetUrl" placeholder="example.com أو 192.168.1.1">
+            </div>
+            <div class="field">
+              <label>نوع الخادم</label>
+              <input type="text" id="serverType" placeholder="مثال: Linux / Windows / Cloud">
+            </div>
+          </div>
+          <div class="field field-full" style="margin-top:14px;">
+            <label>لغة البرمجة / التقنيات المستخدمة</label>
+            <input type="text" id="techStack" placeholder="مثال: PHP, Laravel, MySQL">
+          </div>
+        </div>
+      `;
+    }
+    if (step === 4) {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">المرفقات</div>
+          <p style="font-size:0.9rem; color:var(--muted); margin:0 0 14px;">
+            ارفع أي وثائق تقنية تساعد فريقنا على تقييم البنية بشكل دقيق.
+          </p>
+          <div
+            class="upload-zone"
+            id="uploadZone"
+            onclick="document.getElementById('fileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('dragging')"
+            ondragleave="this.classList.remove('dragging')"
+            ondrop="handleDrop(event)"
+          >
+            <span class="upload-icon">📎</span>
+            <div class="upload-text">اسحب ملفاتك هنا أو <span class="upload-btn-link">تصفح لاختيارها</span></div>
+            <div class="upload-hint">يُقبل: تقرير سابق، مخطط الشبكة، ملفات تقنية — الحجم الأقصى: 20MB</div>
+          </div>
+          <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFileSelect(this.files)">
+          <div class="uploaded-files" id="uploadedFiles"></div>
+        </div>
+      `;
+    }
+  }
+  return '';
+}
+
+// ─── DOMAIN SELECTION ───
+function selectDomain(card) {
+  document.querySelectorAll('.domain-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedDomain = card.dataset.domain;
+
+  const cfg = domainConfig[selectedDomain];
+  document.getElementById('bannerIcon').textContent = cfg.icon;
+  document.getElementById('bannerValue').textContent = cfg.label;
+  document.getElementById('selectedBanner').classList.add('visible');
+  document.getElementById('domainError').style.display = 'none';
+
+  // Update sidebar step names
+  for (let s = 2; s <= 4; s++) {
+    const stepCfg = cfg.steps[s];
+    document.getElementById(`step${s}Name`).textContent = stepCfg.sidebar.name;
+    document.getElementById(`step${s}Desc`).textContent = stepCfg.sidebar.desc;
+  }
+
+  // Render dynamic content for steps 2, 3, 4
+  for (let s = 2; s <= 4; s++) {
+    const stepCfg = cfg.steps[s];
+    document.getElementById(`step${s}Eyebrow`).textContent = stepCfg.eyebrow;
+    document.getElementById(`step${s}Title`).textContent = stepCfg.title;
+    document.getElementById(`step${s}Subtitle`).textContent = stepCfg.subtitle;
+    document.getElementById(`step${s}Content`).innerHTML = getStepContent(selectedDomain, s);
+  }
+
+  // Re-attach chip listeners
+  attachChipListeners();
+}
+
+function changeDomain() {
+  document.querySelectorAll('.domain-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('selectedBanner').classList.remove('visible');
+  selectedDomain = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── CHIP LISTENERS ───
+function attachChipListeners() {
+  document.querySelectorAll('.chip input').forEach(input => {
+    input.addEventListener('change', function() {
+      const chip = this.closest('.chip');
+      const container = chip.parentElement;
+      const isSingle = container.dataset.single === 'true';
+
+      if (isSingle) {
+        // Radio behavior
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('checked'));
+        if (this.checked) chip.classList.add('checked');
+      } else {
+        // Checkbox behavior
+        if (this.checked) chip.classList.add('checked');
+        else chip.classList.remove('checked');
+      }
+    });
+  });
+}
+
+// ─── BUDGET SELECTION ───
+function selectBudget(card) {
+  document.querySelectorAll('.budget-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// ─── FILE UPLOAD ───
+function handleFileSelect(files) {
+  for (const file of files) addFile(file);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragging');
+  handleFileSelect(e.dataTransfer.files);
+}
+
+function addFile(file) {
+  const icons = { pdf: '📄', image: '🖼', doc: '📝', sheet: '📊' };
+  const ext = file.name.split('.').pop().toLowerCase();
+  const iconKey = ['pdf'].includes(ext) ? 'pdf' : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'image' : ['doc','docx'].includes(ext) ? 'doc' : 'sheet';
+
+  const id = Date.now() + Math.random();
+  uploadedFiles.push({ id, file });
+
+  const el = document.createElement('div');
+  el.className = 'uploaded-file';
+  el.dataset.id = id;
+  el.innerHTML = `
+    <span class="file-icon">${icons[iconKey]}</span>
+    <span class="file-name">${file.name}</span>
+    <span class="file-size">${(file.size / 1024).toFixed(0)} KB</span>
+    <button class="file-remove" onclick="removeFile(${id})" title="حذف">✕</button>
+  `;
+  document.getElementById('uploadedFiles').appendChild(el);
+}
+
+function removeFile(id) {
+  uploadedFiles = uploadedFiles.filter(f => f.id !== id);
+  document.querySelector(`[data-id="${id}"]`)?.remove();
+}
+
+// ─── STEP NAVIGATION ───
+function goToStep(step) {
+  document.getElementById(`panel-${currentStep}`)?.classList.remove('active');
+
+  currentStep = step;
+
+  document.getElementById(`panel-${currentStep}`)?.classList.add('active');
+  const stepItems = document.querySelectorAll('.step-item');
+  stepItems.forEach((item, i) => {
+    const s = i + 1;
+    item.classList.remove('active', 'done');
+    if (s < currentStep) item.classList.add('done');
+    if (s === currentStep) item.classList.add('active');
+  });
+
+  // Update breadcrumb & progress
+  const stepLabels = ['اختيار المجال', '', '', '', 'المراجعة والإرسال'];
+  if (selectedDomain && currentStep >= 2 && currentStep <= 4) {
+    stepLabels[currentStep - 1] = domainConfig[selectedDomain].steps[currentStep].sidebar.name;
+  }
+  document.getElementById('breadcrumbStep').textContent = stepLabels[currentStep - 1] || '';
+  document.getElementById('progressLabel').textContent = `الخطوة ${currentStep} من ${totalSteps}`;
+  document.getElementById('progressFill').style.width = `${(currentStep / totalSteps) * 100}%`;
+  document.getElementById('footerStepName').textContent = stepLabels[currentStep - 1] || '';
+
+  document.getElementById('btnBack').style.display = currentStep > 1 ? '' : 'none';
+
+  const btnNext = document.getElementById('btnNext');
+  if (currentStep === totalSteps) {
+    btnNext.textContent = 'إرسال الطلب ✓';
+    btnNext.style.background = 'var(--success)';
+    populateReview();
+  } else {
+    btnNext.textContent = 'التالي ←';
+    btnNext.style.background = '';
+  }
+
+  document.getElementById('formPanels').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function goNext() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep === totalSteps) {
+    submitRequest();
+    return;
+  }
+  goToStep(currentStep + 1);
+}
+
+function goBack() {
+  if (currentStep > 1) goToStep(currentStep - 1);
+}
+
+// ─── VALIDATION ───
+function validateStep(step) {
+  if (step === 1) {
+    if (!selectedDomain) {
+      document.getElementById('domainError').style.display = 'block';
+      return false;
+    }
+  }
+  if (step === 2 && selectedDomain === 'dev') {
+    const name = document.getElementById('projectName')?.value.trim();
+    const type = document.getElementById('projectType')?.value;
+    if (!name || !type) {
+      alert('يرجى ملء اسم المشروع ونوعه.');
+      return false;
+    }
+  }
+  if (step === 2 && selectedDomain === 'mkt') {
+    const name = document.getElementById('companyName')?.value.trim();
+    const sector = document.getElementById('sector')?.value;
+    if (!name || !sector) {
+      alert('يرجى ملء اسم الشركة والقطاع.');
+      return false;
+    }
+  }
+  if (step === 2 && selectedDomain === 'sec') {
+    const target = document.querySelector('input[name="target"]:checked');
+    if (!target) {
+      alert('يرجى اختيار نوع الهدف.');
+      return false;
+    }
+  }
+  if (step === 3 && selectedDomain === 'dev') {
+    const goal = document.getElementById('projectGoal')?.value.trim();
+    if (!goal) {
+      alert('يرجى تحديد الهدف من المشروع.');
+      return false;
+    }
+  }
+  if (step === 3 && selectedDomain === 'mkt') {
+    const goals = document.querySelectorAll('#goalsChips input:checked');
+    const channels = document.querySelectorAll('#channelsChips input:checked');
+    if (goals.length === 0 || channels.length === 0) {
+      alert('يرجى اختيار هدف واحد على الأقل وقناة واحدة على الأقل.');
+      return false;
+    }
+  }
+  if (step === 3 && selectedDomain === 'sec') {
+    const serviceType = document.querySelector('input[name="serviceType"]:checked');
+    if (!serviceType) {
+      alert('يرجى اختيار نوع الخدمة الأمنية.');
+      return false;
+    }
+  }
+  if (step === 4 && selectedDomain !== 'sec') {
+    const budget = document.querySelector('.budget-card.selected');
+    if (!budget) {
+      alert('يرجى اختيار نطاق الميزانية.');
+      return false;
+    }
+  }
+  if (step === 5) {
+    if (!document.getElementById('termsCheck').checked) {
+      alert('يرجى الموافقة على الشروط والأحكام للمتابعة.');
+      return false;
+    }
+  }
+  return true;
+}
+
+// ─── HELPERS ───
+function getCheckedValues(containerId) {
+  const chips = document.querySelectorAll(`#${containerId} input:checked`);
+  return Array.from(chips).map(i => i.closest('.chip').textContent.trim());
+}
+
+function getRadioValue(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.closest('.chip').textContent.trim() : '—';
+}
+
+function getSelectedBudget() {
+  const card = document.querySelector('.budget-card.selected');
+  return card ? card.querySelector('.budget-value').textContent.trim() : '—';
+}
+
+function reviewRow(label, value) {
+  return `<div class="review-row"><span class="review-row-label">${label}</span><span class="review-row-value">${value || '—'}</span></div>`;
+}
+
+function reviewRowChips(label, values) {
+  if (!values || values.length === 0) return reviewRow(label, '—');
+  const chipsHtml = values.map(v => `<span class="review-chip">${v}</span>`).join('');
+  return `<div class="review-row"><span class="review-row-label">${label}</span><span class="review-row-value"><div class="review-chips">${chipsHtml}</div></span></div>`;
+}
+
+// ─── POPULATE REVIEW ───
+function populateReview() {
+  if (!selectedDomain) return;
+  const cfg = domainConfig[selectedDomain];
+
+  document.getElementById('rev-domain').textContent = cfg.icon + '  ' + cfg.label;
+  document.getElementById('rev-step2-title').textContent = cfg.steps[2].reviewTitle;
+  document.getElementById('rev-step3-title').textContent = cfg.steps[3].reviewTitle;
+  document.getElementById('rev-step4-title').textContent = cfg.steps[4].reviewTitle;
+
+  let step2Html = '', step3Html = '', step4Html = '';
+
+  if (selectedDomain === 'dev') {
+    step2Html =
+      reviewRow('اسم المشروع', document.getElementById('projectName')?.value) +
+      reviewRow('نوع المشروع', document.getElementById('projectType')?.selectedOptions[0]?.text);
+
+    step3Html =
+      reviewRow('الهدف', document.getElementById('projectGoal')?.value) +
+      reviewRow('المستخدمون', document.getElementById('targetUsers')?.value) +
+      reviewRow('تصميم جاهز', document.getElementById('hasDesign')?.selectedOptions[0]?.text) +
+      reviewRow('عدد الصفحات', document.getElementById('pagesCount')?.value) +
+      reviewRow('موقع مشابه', document.getElementById('similarSite')?.value) +
+      reviewRowChips('الميزات', getCheckedValues('featuresChips'));
+
+    step4Html =
+      reviewRow('الميزانية', getSelectedBudget() + ' DZD') +
+      reviewRow('المرفقات', uploadedFiles.length > 0 ? `${uploadedFiles.length} ملف` : 'لا يوجد');
+  }
+
+  if (selectedDomain === 'mkt') {
+    step2Html =
+      reviewRow('اسم الشركة', document.getElementById('companyName')?.value) +
+      reviewRow('القطاع', document.getElementById('sector')?.selectedOptions[0]?.text);
+
+    step3Html =
+      reviewRowChips('الأهداف', getCheckedValues('goalsChips')) +
+      reviewRowChips('القنوات', getCheckedValues('channelsChips'));
+
+    step4Html =
+      reviewRow('ميزانية الإعلانات', getSelectedBudget() + ' DZD شهرياً');
+  }
+
+  if (selectedDomain === 'sec') {
+    step2Html =
+      reviewRow('نوع الهدف', getRadioValue('target'));
+
+    step3Html =
+      reviewRow('نوع الخدمة', getRadioValue('serviceType')) +
+      reviewRow('الرابط / IP', document.getElementById('targetUrl')?.value) +
+      reviewRow('نوع الخادم', document.getElementById('serverType')?.value) +
+      reviewRow('التقنيات', document.getElementById('techStack')?.value);
+
+    step4Html =
+      reviewRow('المرفقات', uploadedFiles.length > 0 ? `${uploadedFiles.length} ملف` : 'لا يوجد');
+  }
+
+  document.getElementById('rev-step2-content').innerHTML = step2Html;
+  document.getElementById('rev-step3-content').innerHTML = step3Html;
+  document.getElementById('rev-step4-content').innerHTML = step4Html;
+}
+
+// ─── SUBMIT ───
+function getFieldValue(id) {
+  return document.getElementById(id)?.value?.trim() || '';
+}
+
+function getCheckedRawValues(containerId) {
+  return Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(i => i.value);
+}
+
+function getRadioRawValue(name) {
+  return document.querySelector(`input[name="${name}"]:checked`)?.value || '';
+}
+
+function budgetRangeToAmount(range) {
+  const map = {
+    lt50: 50000,
+    '50-100': 100000,
+    '100-300': 300000,
+    '300+': 300000,
+    '10k': 10000,
+    '20k': 20000,
+    '50k': 50000,
+    more: 50000
+  };
+  return map[range] || null;
+}
+
+async function loadServicesForSubmit(token) {
+  if (cachedServices) return cachedServices;
+  const response = await fetch(apiUrl('/api/dashboard/services'), {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('تعذر تحميل قائمة الخدمات من الخادم.');
+  const result = await response.json();
+  cachedServices = result.data || [];
+  return cachedServices;
+}
+
+function pickServiceId(services) {
+  const byCategory = services.find(service => {
+    if (selectedDomain === 'dev') return service.category === 'programming';
+    if (selectedDomain === 'mkt') return service.category === 'marketing';
+    if (selectedDomain === 'sec') return service.category === 'cyber_security';
+    return false;
+  });
+  if (byCategory) return byCategory.id;
+
+  const fallbackIds = { dev: 1, mkt: 13, sec: 24 };
+  return fallbackIds[selectedDomain] || services[0]?.id || 1;
+}
+
+function buildRequestPayload(serviceId) {
+  const budgetRange = document.querySelector('.budget-card.selected')?.dataset.value || '';
+  const base = {
+    service_id: serviceId,
+    domain: selectedDomain,
+    budget: budgetRangeToAmount(budgetRange),
+    budget_range: budgetRange,
+    attachments: uploadedFiles.map(({ file }) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type
+    }))
+  };
+
+  if (selectedDomain === 'dev') {
+    const formData = {
+      project_type: getFieldValue('projectType'),
+      goal: getFieldValue('projectGoal'),
+      target_users: getFieldValue('targetUsers'),
+      has_design: getFieldValue('hasDesign'),
+      pages_count: getFieldValue('pagesCount') ? Number(getFieldValue('pagesCount')) : null,
+      similar_site: getFieldValue('similarSite'),
+      features: getCheckedRawValues('featuresChips')
+    };
+    return {
+      ...base,
+      title: getFieldValue('projectName'),
+      description: formData.goal,
+      form_data: formData,
+      notes: formData.similar_site ? `مرجع مشابه: ${formData.similar_site}` : undefined
+    };
+  }
+
+  if (selectedDomain === 'mkt') {
+    const formData = {
+      company_name: getFieldValue('companyName'),
+      sector: getFieldValue('sector'),
+      goals: getCheckedRawValues('goalsChips'),
+      channels: getCheckedRawValues('channelsChips'),
+      ad_budget: budgetRange
+    };
+    return {
+      ...base,
+      title: `حملة تسويق رقمي - ${formData.company_name}`,
+      description: `الأهداف: ${formData.goals.join(', ')}. القنوات: ${formData.channels.join(', ')}.`,
+      form_data: formData
+    };
+  }
+
+  const formData = {
+    target_type: getRadioRawValue('target'),
+    service_type: getRadioRawValue('serviceType'),
+    target_url: getFieldValue('targetUrl'),
+    server_type: getFieldValue('serverType'),
+    tech_stack: getFieldValue('techStack')
+  };
+  return {
+    ...base,
+    title: `طلب أمن سيبراني - ${formData.service_type || formData.target_type}`,
+    description: `نوع الهدف: ${formData.target_type}. نوع الخدمة: ${formData.service_type}.`,
+    form_data: formData,
+    notes: [formData.target_url, formData.server_type, formData.tech_stack].filter(Boolean).join(' | ') || undefined
+  };
+}
+
+async function submitRequest() {
+  const btnNext = document.getElementById('btnNext');
+  btnNext.disabled = true;
+  btnNext.textContent = 'جارٍ الإرسال...';
+
+  try {
+    const token = requireAuthToken();
+    if (!token) return;
+
+    const services = await loadServicesForSubmit(token);
+    const payload = buildRequestPayload(pickServiceId(services));
+
+    const response = await fetch(apiUrl('/api/dashboard/service-request'), {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'تعذر إرسال الطلب إلى قاعدة البيانات.');
+    }
+
+    document.getElementById('formPanels').style.display = 'none';
+    document.getElementById('footerNav').style.display = 'none';
+    document.getElementById('successPanel').classList.add('visible');
+
+    const ref = 'MEDS-2026-' + String(result.project_id || Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('refNumber').textContent = ref;
+
+    document.querySelectorAll('.step-item').forEach(item => {
+      item.classList.remove('active');
+      item.classList.add('done');
+    });
+  } catch (error) {
+    alert(error.message || 'حدث خطأ أثناء إرسال الطلب.');
+    btnNext.disabled = false;
+    btnNext.textContent = 'إرسال الطلب ✓';
+  }
+}
+
+// ─── INIT ───
+document.getElementById('btnBack').style.display = 'none';
+</script>
+
+</body>
+</html>
+
