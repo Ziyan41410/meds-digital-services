@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
+
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const servicesRoutes = require('./routes/servicesRoutes');
@@ -22,7 +23,7 @@ const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000,http://localhost:3001,http://localhost:5500,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:5500')
+const allowedOrigins = (process.env.CLIENT_URL || "meds-digital-services.onrender.com,http://localhost:3000,http://localhost:3001,http://localhost:5500")
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
