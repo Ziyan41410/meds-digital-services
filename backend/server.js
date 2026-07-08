@@ -7,7 +7,6 @@ const { initializeSocket } = require('./sockets/chatSocket');
 const { setupSocket } = require('./sockets/socketIoHandlers .js');
 
 const PORT = process.env.SERVER_PORT || process.env.PORT || 3000;
-const HOST = process.env.SERVER_HOST || 'localhost';
 
 const server = http.createServer(app);
 
@@ -37,13 +36,14 @@ app.io = io;
     try {
         console.log('🔄 Running database migrations...');
         await runMigrations();
-        
-        server.listen(PORT, HOST, () => {
-            console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+
+        server.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 Server running on port ${PORT}`);
             console.log(`✅ Socket.io initialized`);
             console.log(`✅ Environment: ${process.env.NODE_ENV}`);
             console.log(`✅ Database: ${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
         });
+
     } catch (error) {
         console.error('❌ Failed to start server:', error);
         process.exit(1);
