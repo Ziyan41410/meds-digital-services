@@ -11,12 +11,14 @@ const PORT = process.env.SERVER_PORT || process.env.PORT || 3000;
 const server = http.createServer(app);
 
 // Initialize Socket.io
+
 const io = socketIO(server, {
   cors: {
-    origin: (process.env.CLIENT_URL || 'http://localhost:3000,http://localhost:3001,http://localhost:5500,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:5500')
-      .split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean),
+    origin: [
+      'http://localhost:3000',      // للتطوير المحلي
+      'http://localhost:3001',
+      'https://meds-digital-services.onrender.com'  // أضفنا Render URL
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
   },
