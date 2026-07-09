@@ -1,5 +1,10 @@
 (() => {
-  const API_ORIGIN = window.API_ORIGIN || window.location.origin;
+  // ✅ إصلاح مشكلة CORS - استخدم الرابط الصحيح للخادم
+  const API_ORIGIN = window.API_ORIGIN || 
+    (window.location.origin === 'https://meds-digital-services.onrender.com' 
+      ? 'https://meds-digital-services-api.onrender.com' // استبدل برابط خادمك الفعلي على Render
+      : window.location.origin);
+
   const token = sessionStorage.getItem('authToken')
     || sessionStorage.getItem('token')
     || localStorage.getItem('authToken')
