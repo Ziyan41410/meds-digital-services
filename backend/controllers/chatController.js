@@ -546,6 +546,7 @@ const getMessages = async (req, res) => {
 
     console.debug('getMessages: params', { chatId: chatIdNum, pageNum, limitNum, offset, userId });
 
+    // Inline validated numeric LIMIT/OFFSET to avoid driver/prepared-statement issues
     const query = `
       SELECT 
         m.id,
@@ -565,12 +566,12 @@ const getMessages = async (req, res) => {
       JOIN users u ON m.sender_id = u.id
       WHERE m.chat_id = ? AND m.deleted_at IS NULL
       ORDER BY m.created_at DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${limitNum} OFFSET ${offset}
     `;
 
     let messages;
     try {
-      const [rows] = await db.execute(query, [chatIdNum, limitNum, offset]);
+      const [rows] = await db.execute(query, [chatIdNum]);
       messages = rows;
     } catch (dbError) {
       console.error('Database error executing messages query', {
