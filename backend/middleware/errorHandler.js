@@ -8,13 +8,20 @@ const notFoundHandler = (req, res) => {
 const errorHandler = (err, req, res, next) => {
     const status = err.status || err.statusCode || 500;
 
-    console.error(err.stack || err.message);
+    console.error(err.stack || err.message || err);
 
-    res.status(status).json({
+    const showDetails = process.env.SHOW_ERROR_DETAILS === 'true' || process.env.NODE_ENV === 'development';
+
+    const body = {
         success: false,
-        error: status === 500 ? 'حدث خطأ داخلي في الخادم' : err.message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    });
+        error: (!showDetails && status === 500) ? 'حدث خطأ داخلي في الخادم' : (err.message || 'خطأ'),
+    };
+
+    if (showDetails) {
+        body.details = err.stack || String(err);
+    }
+
+    res.status(status).json(body);
 };
 
 module.exports = { errorHandler, notFoundHandler };
