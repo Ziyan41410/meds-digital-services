@@ -6,8 +6,8 @@ const runMigrations = require('./utils/migrationRunner');
 const { initializeSocket } = require('./sockets/chatSocket');
 const { setupSocket } = require('./sockets/socketIoHandlers .js');
 
-const PORT = process.env.SERVER_PORT || process.env.PORT || 3000;
-const HOST = process.env.SERVER_HOST || 'localhost';
+const PORT = process.env.SERVER_PORT || process.env.PORT || 3001;
+const HOST = process.env.SERVER_HOST || '0.0.0.0';
 
 const server = http.createServer(app);
 
