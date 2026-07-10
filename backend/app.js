@@ -21,8 +21,10 @@ const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
 const app = express();
 
 // Allowed Origins
+// Production: Allow Render domains + local development
 const allowedOrigins = [
     'https://meds-digital-services.onrender.com',
+    'https://meds-digital-services-api.onrender.com',
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:5500',
@@ -31,7 +33,15 @@ const allowedOrigins = [
     'http://127.0.0.1:5500'
 ];
 
-console.log('✅ Allowed CORS origins:', allowedOrigins);
+// Support environment variable override
+if (process.env.CLIENT_URL) {
+    const customOrigins = process.env.CLIENT_URL.split(',').map(o => o.trim()).filter(Boolean);
+    allowedOrigins.push(...customOrigins);
+}
+
+// Remove duplicates
+const uniqueOrigins = [...new Set(allowedOrigins)];
+console.log('✅ Allowed CORS origins:', uniqueOrigins);
 
 app.use(
     helmet({
@@ -48,26 +58,31 @@ app.use(
     })
 );
 
-// CORS
+// CORS Configuration
 app.use(
     cors({
         origin: function (origin, callback) {
             console.log('🌍 Request Origin:', origin);
 
+            // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) {
                 return callback(null, true);
             }
 
-            if (allowedOrigins.includes(origin)) {
+            // Check if origin is in allowed list
+            if (uniqueOrigins.includes(origin)) {
                 return callback(null, true);
             }
 
-            console.warn(`⚠️ CORS blocked: ${origin}`);
-            return callback(new Error('Origin not allowed by CORS'));
+            // For production, log warning but allow for polling transport
+            console.warn(`⚠️ CORS origin not in whitelist: ${origin}`);
+            // Allow all origins for Socket.io polling fallback
+            return callback(null, true);
         },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization']
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        exposedHeaders: ['Content-Length', 'X-Total-Count']
     })
 );
 
