@@ -3,9 +3,7 @@
  */
 
 // Base API URL
-const API_URL = window.location.protocol.startsWith('http') && window.location.port === '3001'
-    ? '/api'
-    : 'http://localhost:3001/api';
+const API_URL = API_CONFIG.BASE;
 
 // ===== MODAL FUNCTIONS =====
 function openModal(modalId) {

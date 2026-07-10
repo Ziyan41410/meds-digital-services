@@ -1,5 +1,8 @@
-const apiHost = window.location.protocol.startsWith('http') ? window.location.hostname : 'localhost';
-const API_ORIGIN = `http://${apiHost || 'localhost'}:3000`;
+// Get API origin dynamically from window location
+const protocol = window.location.protocol;
+const host = window.location.hostname;
+const port = window.location.port ? `:${window.location.port}` : '';
+const API_ORIGIN = `${protocol}//${host}${port}`;
 
 function getStoredUser() {
     try {

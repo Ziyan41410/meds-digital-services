@@ -29,10 +29,8 @@ async function showProjectDetails(projectId) {
     };
   }
   try {
-    // جلب تفاصيل المشروع من الخادم
-    const apiBaseUrl = window.location.protocol.startsWith('http') && window.location.port === '3001'
-      ? '/api'
-      : 'http://localhost:3001/api';
+    // جلب تفاصيل المشروع من الخادم - استخدم API_CONFIG
+    const apiBaseUrl = API_CONFIG.BASE;
 
     const response = await fetch(`${apiBaseUrl}/projects/${projectId}`, {
       headers: { 'Authorization': `Bearer ${token}` }

@@ -1,6 +1,4 @@
-const API_BASE_URL = window.location.protocol.startsWith('http') && window.location.port === '3001'
-    ? '/api'
-    : 'http://localhost:3001/api';
+const API_BASE_URL = API_CONFIG.BASE;
 
 const messageBox = document.getElementById('formMessage');
 
