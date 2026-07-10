@@ -16,21 +16,30 @@ const getAPIBase = () => {
 };
 
 const getSocketURL = () => {
-  // استخدم نفس host و protocol مثل الصفحة الحالية
   if (typeof window !== 'undefined' && window.location && window.location.protocol && window.location.protocol.startsWith('http')) {
     const protocol = window.location.protocol;
     const host = window.location.hostname;
     const port = window.location.port ? `:${window.location.port}` : '';
     return `${protocol}//${host}${port}`;
   }
-  return 'http://localhost:3001'; // fallback فقط للتطوير المحلي
+  return 'http://localhost:3001';
 };
 
 // Global API configuration
 const API_CONFIG = {
   BASE: getAPIBase(),
   SOCKET_URL: getSocketURL(),
-  
+  SOCKET_OPTIONS: {
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    reconnectionAttempts: 5,
+    transports: ['websocket', 'polling'],
+    withCredentials: true,
+    extraHeaders: {
+      authorization: localStorage.getItem('token') || ''
+    }
+  },
   // API Routes
   AUTH: {
     LOGIN: '/auth/login',
