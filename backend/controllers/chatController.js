@@ -534,7 +534,9 @@ const getMessages = async (req, res) => {
       return sendError(res, 'ليس لديك صلاحية الوصول إلى هذه المحادثة', 403);
     }
 
-    const offset = (page - 1) * limit;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const offset = (pageNum - 1) * limitNum;
 
     const query = `
       SELECT 
@@ -558,7 +560,7 @@ const getMessages = async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const [messages] = await db.execute(query, [chatId, parseInt(limit), offset]);
+    const [messages] = await db.execute(query, [chatId, limitNum, offset]);
     const messageIds = messages.map((message) => message.id).filter(Boolean);
     let attachmentsByMessage = {};
 
@@ -594,8 +596,8 @@ const getMessages = async (req, res) => {
 
     return sendSuccess(res, {
       messages: parsedMessages.reverse(),
-      page: parseInt(page),
-      limit: parseInt(limit),
+      page: pageNum,
+      limit: limitNum,
       total: messages.length
     }, 'تم جلب الرسائل بنجاح');
   } catch (error) {
