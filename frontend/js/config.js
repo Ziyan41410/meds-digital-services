@@ -16,8 +16,14 @@ const getAPIBase = () => {
 };
 
 const getSocketURL = () => {
-  // Always use localhost:3001 for Socket.io
-  return 'http://localhost:3001';
+  // استخدم نفس host و protocol مثل الصفحة الحالية
+  if (typeof window !== 'undefined' && window.location && window.location.protocol && window.location.protocol.startsWith('http')) {
+    const protocol = window.location.protocol;
+    const host = window.location.hostname;
+    const port = window.location.port ? `:${window.location.port}` : '';
+    return `${protocol}//${host}${port}`;
+  }
+  return 'http://localhost:3001'; // fallback فقط للتطوير المحلي
 };
 
 // Global API configuration
