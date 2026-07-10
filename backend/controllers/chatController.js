@@ -524,6 +524,12 @@ const getMessages = async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const userId = getCurrentUserId(req);
 
+    // Validate chatId
+    const chatIdNum = parseInt(chatId);
+    if (!Number.isInteger(chatIdNum) || chatIdNum <= 0) {
+      return sendError(res, 'معرّف المحادثة غير صالح', 400);
+    }
+
     // Check if user is participant
     const [participant] = await db.execute(
       'SELECT * FROM chat_participants WHERE chat_id = ? AND user_id = ? AND is_active = TRUE',
@@ -534,9 +540,11 @@ const getMessages = async (req, res) => {
       return sendError(res, 'ليس لديك صلاحية الوصول إلى هذه المحادثة', 403);
     }
 
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 20;
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
+
+    console.debug('getMessages: params', { chatId: chatIdNum, pageNum, limitNum, offset, userId });
 
     const query = `
       SELECT 
@@ -560,18 +568,31 @@ const getMessages = async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const [messages] = await db.execute(query, [chatId, limitNum, offset]);
+    let messages;
+    try {
+      const [rows] = await db.execute(query, [chatIdNum, limitNum, offset]);
+      messages = rows;
+    } catch (dbError) {
+      console.error('Database error executing messages query', {
+        error: dbError && dbError.message,
+        sqlState: dbError && dbError.sqlState,
+        errno: dbError && dbError.errno,
+        params: { chatId: chatIdNum, limit: limitNum, offset }
+      });
+      throw dbError;
+    }
     const messageIds = messages.map((message) => message.id).filter(Boolean);
     let attachmentsByMessage = {};
 
     if (messageIds.length > 0) {
-      const placeholders = messageIds.map(() => '?').join(',');
+      const numericIds = messageIds.map((id) => parseInt(id, 10)).filter((v) => Number.isInteger(v));
+      const placeholders = numericIds.map(() => '?').join(',');
       const [attachments] = await db.execute(
         `SELECT message_id, id, file_url, file_name, file_type, file_size, mime_type
          FROM chat_attachments
          WHERE message_id IN (${placeholders})
          ORDER BY id ASC`,
-        messageIds
+        numericIds
       );
 
       attachmentsByMessage = attachments.reduce((acc, attachment) => {
