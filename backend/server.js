@@ -12,13 +12,22 @@ const server = http.createServer(app);
 
 // Initialize Socket.io
 
+// Initialize Socket.io
 const io = socketIO(server, {
   cors: {
-    origin: [
-      'http://localhost:3000',      // للتطوير المحلي
-      'http://localhost:3001',
-      'https://meds-digital-services.onrender.com'  // أضفنا Render URL
-    ],
+    origin: function(origin, callback) {
+      // السماح بـ frontend و backend على Render
+      const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000,http://localhost:3001')
+        .split(',')
+        .map(o => o.trim())
+        .filter(Boolean);
+      
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // السماح لجميع الـ origins مؤقتاً في production
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
   },
