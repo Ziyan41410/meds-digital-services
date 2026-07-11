@@ -149,10 +149,14 @@ const updateProjectStatus = async (req, res) => {
     try {
         const { id } = req.params;
         const { status, progress } = req.body;
+        const progressValue = Number.isFinite(Number(progress)) ? Number(progress) : 0;
+        const safeProgress = status === 'completed' && progressValue < 100
+            ? 100
+            : Math.min(Math.max(progressValue, 0), 100);
 
         const [result] = await pool.query(
             `UPDATE projects SET status = ?, progress = ? WHERE id = ?`,
-            [status, progress || 0, id]
+            [status, safeProgress, id]
         );
 
         if (result.affectedRows === 0) {

@@ -28,6 +28,14 @@ async function showProjectDetails(projectId) {
       return '#27ae60';
     };
   }
+
+  function getProjectProgress(project) {
+    const raw = project?.progress;
+    const pct = Number.isFinite(Number(raw)) ? Number(raw) : 0;
+    if (project?.status === 'completed' && pct < 100) return 100;
+    return Math.min(Math.max(pct, 0), 100);
+  }
+
   try {
     // جلب تفاصيل المشروع من الخادم - استخدم API_CONFIG
     const apiBaseUrl = API_CONFIG.BASE;
@@ -42,6 +50,7 @@ async function showProjectDetails(projectId) {
 
     const result = await response.json();
     const project = result.data;
+    const pct = getProjectProgress(project);
 
     // إنشاء نافذة تفاصيل المشروع
     const modal = document.createElement('div');
@@ -67,8 +76,8 @@ async function showProjectDetails(projectId) {
             <div class="detail-row">
               <span class="detail-label">التقدم:</span>
               <div class="progress-container">
-                <div class="progress-bar" style="width: ${project.progress || 0}%; background: ${getProgressColor(project.progress || 0)};"></div>
-                <span class="progress-text">${project.progress || 0}%</span>
+                <div class="progress-bar" style="width: ${pct}%; background: ${getProgressColor(pct)};"></div>
+                <span class="progress-text">${pct}%</span>
               </div>
             </div>
             <div class="detail-row">

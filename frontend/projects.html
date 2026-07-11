@@ -272,7 +272,7 @@
 .pjs-on_hold { background: rgba(217,119,6,0.12); color: #d97706; }
 .pjs-cancelled { background: var(--surface-muted); color: var(--muted); }
 
-.pj-card-desc { margin: 14px 0 0; font-size: 0.84rem; color: var(--muted); line-height: 1.6; min-height: 42px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pj-card-desc { margin: 14px 0 0; font-size: 0.84rem; color: var(--muted); line-height: 1.6; min-height: 42px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 .pj-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .pj-tag {
@@ -771,6 +771,13 @@ function getProgressColor(pct, late) {
   return 'var(--warning)';
 }
 
+function getProjectProgress(p) {
+  const raw = p?.progress;
+  const pct = Number.isFinite(Number(raw)) ? Number(raw) : 0;
+  if (p?.status === 'completed' && pct < 100) return 100;
+  return Math.min(Math.max(pct, 0), 100);
+}
+
 function parseFormData(p) {
   let fd = p.form_data || {};
   if (typeof fd === 'string') { try { fd = JSON.parse(fd); } catch { fd = {}; } }
@@ -907,7 +914,7 @@ function computeSummary(list) {
 function cardTemplate(p) {
   const meta = getDomainMeta(p);
   const s = STATUS_MAP[p.status] || { label: p.status, cls: 'pjs-pending' };
-  const pct = p.progress ?? 0;
+  const pct = getProjectProgress(p);
   const endDate = p.end_date ? new Date(p.end_date) : null;
   const isLate = endDate && endDate < new Date() && p.status !== 'completed';
   const dateStr = endDate ? endDate.toLocaleDateString('ar-DZ', { year:'numeric', month:'short', day:'numeric' }) : '—';
@@ -1080,7 +1087,7 @@ function openDetailsModal(p, loading) {
 
   const meta = getDomainMeta(p);
   const s = STATUS_MAP[p.status] || { label: p.status, cls: 'pjs-pending' };
-  const pct = p.progress ?? 0;
+  const pct = getProjectProgress(p);
   const endDate = p.end_date ? new Date(p.end_date) : null;
   const isLate = endDate && endDate < new Date() && p.status !== 'completed';
   const color = getProgressColor(pct, isLate);

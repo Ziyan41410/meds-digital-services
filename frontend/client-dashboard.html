@@ -547,14 +547,105 @@
   to   { opacity:1; transform:translateY(0); }
 }
 
+/* ════════════════════════════════════════════
+   MOBILE BOTTOM TAB BAR
+   Replaces the hidden header-nav on small screens
+   with an app-style fixed bottom navigation.
+════════════════════════════════════════════ */
+.bottom-tabbar {
+  display: none;
+  position: fixed;
+  bottom: 0; inset-inline: 0;
+  z-index: 250;
+  height: 62px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  background: var(--surface-glass);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 -4px 24px rgba(15,25,35,0.08);
+}
+.bottom-tabbar-inner {
+  height: 62px;
+  display: flex;
+  align-items: stretch;
+}
+.bottom-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  position: relative;
+  transition: color 0.15s;
+}
+.bottom-tab svg { opacity: 0.75; transition: opacity 0.15s, transform 0.15s; }
+.bottom-tab.active { color: var(--primary-dark); }
+.bottom-tab.active svg { opacity: 1; transform: translateY(-1px); }
+.bottom-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  width: 22px; height: 3px;
+  border-radius: 99px;
+  background: var(--primary);
+}
+.bottom-tab .tab-fab {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: grid; place-items: center;
+  color: #fff;
+  margin-top: -18px;
+  box-shadow: 0 4px 16px var(--primary-glow);
+  transition: transform 0.2s;
+}
+.bottom-tab:active .tab-fab { transform: scale(0.92); }
+
+/* Hamburger for header (shown when tabs collapse but before full bottom-bar breakpoint) */
+.header-menu-btn { display: none; }
+
 /* responsive */
 @media (max-width: 900px) {
   .main-grid { grid-template-columns: 1fr; }
   .header-nav { display: none; }
+  .bottom-tabbar { display: block; }
+  .dashboard { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0) + 24px); }
+  .qa-strip { gap: 10px; }
+  .dashboard-panel { padding: 20px; }
+  .metric-card { padding: 18px 16px; }
 }
 @media (max-width: 640px) {
   .header-brand span:last-child { display: none; }
   .status-pill { display: none; }
+  .header-inner { flex-wrap: wrap; align-items: center; gap: 12px; }
+  .header-controls { width: 100%; justify-content: flex-end; }
+  .page-hero { margin-bottom: 20px; }
+  .qa-strip { flex-direction: column; align-items: stretch; padding-bottom: 14px; }
+  .qa-btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 520px) {
+  .site-header { height: auto; padding: 10px 0; }
+  .header-inner { width: min(100%, calc(100% - 24px)); padding-inline: 12px; }
+  .dashboard { padding: 24px 0 40px; padding-bottom: calc(60px + env(safe-area-inset-bottom, 0) + 24px); }
+  .page-hero h1 { font-size: 1.35rem; }
+  .qa-strip { padding-bottom: 12px; }
+  .metric-card { padding: 16px 14px; }
+  .project-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .project-row h4 { font-size: 0.95rem; }
+  .settings-drawer { width: 100%; inset-inline-end: 0; }
+  .drawer-body { padding: 0 16px 24px; }
+  .drawer-header { padding: 16px 18px; }
+  .toast { inset-inline: 12px; inset-inline-start: 12px; width: auto; text-align: center; }
+}
+@media (max-width: 380px) {
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .metric-num { font-size: 1.6rem; }
 }
 
   </style>
@@ -639,6 +730,33 @@
     </div>
   </div>
 </header>
+
+<!-- ════════════════ MOBILE BOTTOM TAB BAR ════════════════ -->
+<nav class="bottom-tabbar" aria-label="التنقل السريع">
+  <div class="bottom-tabbar-inner">
+    <a class="bottom-tab active" href="client-dashboard.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>الرئيسية</span>
+    </a>
+    <a class="bottom-tab" href="projects.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>المشاريع</span>
+    </a>
+    <a class="bottom-tab" id="tabNewRequest" href="new-service.html">
+      <span class="tab-fab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </span>
+    </a>
+    <a class="bottom-tab" href="chats.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>المحادثات</span>
+    </a>
+    <a class="bottom-tab" href="invoices.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      <span>الفواتير</span>
+    </a>
+  </div>
+</nav>
 
 <!-- ════════════════ SETTINGS DRAWER ════════════════ -->
 <div class="settings-overlay" id="settingsOverlay"></div>
@@ -1441,6 +1559,9 @@ function renderActivity(list) {
   overflow: hidden;
   transform: translateY(28px) scale(0.97);
   transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
 }
 .sr-overlay.open .sr-modal { transform: translateY(0) scale(1); }
 
@@ -1449,14 +1570,16 @@ function renderActivity(list) {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 24px 16px;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
-.sr-header-left { display: flex; align-items: center; gap: 10px; }
+.sr-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .sr-header-icon {
   width: 38px; height: 38px; border-radius: 10px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   display: grid; place-items: center;
   font-size: 1.1rem;
   box-shadow: 0 3px 12px var(--primary-glow);
+  flex-shrink: 0;
 }
 .sr-header h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
 .sr-header p  { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted); }
@@ -1465,6 +1588,7 @@ function renderActivity(list) {
   border: none; background: none; color: var(--muted);
   cursor: pointer; display: grid; place-items: center;
   font-size: 1.2rem; transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
 }
 .sr-close:hover { background: var(--surface-muted); color: var(--text); }
 
@@ -1474,6 +1598,7 @@ function renderActivity(list) {
   gap: 0; padding: 14px 24px;
   border-bottom: 1px solid var(--line);
   background: var(--surface-muted);
+  flex-shrink: 0;
 }
 .sr-step {
   display: flex; align-items: center; gap: 7px;
@@ -1505,7 +1630,7 @@ function renderActivity(list) {
 .sr-step-connector.done { background: var(--success); }
 
 /* ── Body ── */
-.sr-body { padding: 24px; min-height: 240px; }
+.sr-body { padding: 24px; min-height: 240px; overflow-y: auto; flex: 1; }
 
 /* ── Service cards grid ── */
 .sr-service-grid {
@@ -1552,6 +1677,7 @@ function renderActivity(list) {
   font: inherit;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 16px; /* منع تكبير iOS التلقائي عند التركيز */
 }
 .sr-input:focus, .sr-textarea:focus, .sr-select:focus {
   border-color: var(--primary);
@@ -1621,6 +1747,7 @@ function renderActivity(list) {
   border-top: 1px solid var(--line);
   background: var(--surface-muted);
   gap: 10px;
+  flex-shrink: 0;
 }
 .sr-footer-left { font-size: 0.78rem; color: var(--muted); }
 .sr-btn-row { display: flex; gap: 8px; }
@@ -1641,6 +1768,26 @@ function renderActivity(list) {
 
 /* ── Loading spinner inside btn ── */
 .sr-btn .spin { display: inline-block; animation: spin 0.7s linear infinite; margin-inline-start: 4px; }
+
+/* ── Mobile: full-screen sheet ── */
+@media (max-width: 640px) {
+  .sr-overlay { padding: 0; align-items: flex-end; }
+  .sr-modal {
+    width: 100%; max-width: 100%;
+    max-height: 94vh; height: 94vh;
+    border-radius: 20px 20px 0 0;
+  }
+  .sr-header { padding: 16px 16px 12px; }
+  .sr-header p { display: none; }
+  .sr-steps { padding: 12px 16px; }
+  .sr-step span { display: none; }
+  .sr-body { padding: 18px 16px; }
+  .sr-footer { padding: 12px 16px; flex-wrap: wrap; }
+  .sr-footer-left { order: 2; width: 100%; text-align: center; }
+  .sr-btn-row { order: 1; width: 100%; }
+  .sr-btn-row .sr-btn { flex: 1; }
+  .sr-budget-row { grid-template-columns: 1fr; }
+}
   `;
   document.head.appendChild(s);
 })();
@@ -2024,6 +2171,23 @@ document.getElementById('btnNewRequest').addEventListener('click', () => { windo
 document.getElementById('btnViewInvoices').addEventListener('click', viewInvoices);
 document.getElementById('btnRefresh').addEventListener('click', () => loadDashboardData(true));
 
+/* Bottom tab bar "new request" FAB -> open the same modal flow used on desktop */
+const tabNewRequestEl = document.getElementById('tabNewRequest');
+if (tabNewRequestEl) {
+  tabNewRequestEl.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('btnNewRequest').click();
+  });
+}
+
+/* highlight active bottom tab to match current page */
+(function setActiveBottomTab() {
+  const path = window.location.pathname.split('/').pop() || 'client-dashboard.html';
+  document.querySelectorAll('.bottom-tab[href]').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === path);
+  });
+})();
+
 /* ══════════════════════════════════════════════════════
    AUTO-REFRESH STATS — Real-time from API
    Strategy: poll every 30s + Socket.io push if available
@@ -2110,5 +2274,3 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="js/blobs.js"></script>
 </body>
 </html>
-
-
