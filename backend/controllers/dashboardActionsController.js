@@ -187,7 +187,9 @@ exports.getInvoices = async (req, res) => {
     try {
         const clientId = req.userId;
         const { status = 'all', page = 1, limit = 10 } = req.query;
-        const offset = (page - 1) * limit;
+        const pageNum = parseInt(page, 10) || 1;
+        const limitNum = parseInt(limit, 10) || 10;
+        const offset = (pageNum - 1) * limitNum;
         // Determine if requester is a manager/admin
         const [userRows] = await pool.query(
             `SELECT u.id, r.name as role_name, u.department
@@ -245,9 +247,8 @@ exports.getInvoices = async (req, res) => {
         const countSql = `SELECT COUNT(*) as total FROM projects ${whereSql}`;
         const [countResult] = await pool.query(countSql, params);
 
-        const finalQuery = `${baseQuery} ${whereSql} ORDER BY p.created_at DESC LIMIT ? OFFSET ?`;
-        params.push(parseInt(limit, 10), offset);
-
+        // Inline numeric LIMIT/OFFSET after validation to avoid prepared-statement binding issues
+        const finalQuery = `${baseQuery} ${whereSql} ORDER BY p.created_at DESC LIMIT ${limitNum} OFFSET ${offset}`;
         const [invoices] = await pool.query(finalQuery, params);
 
         res.json({
