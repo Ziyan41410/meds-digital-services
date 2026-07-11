@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
         );
 
         const [pendingPayments] = await pool.query(
-            `SELECT COUNT(*) as count FROM projects WHERE client_id = ? AND status = 'completed'`,
+            `SELECT COUNT(*) as count FROM projects WHERE client_id = ? AND status = 'completed' AND COALESCE(paid, 0) = 0`,
             [userId]
         );
 
@@ -49,9 +49,13 @@ router.get('/', async (req, res) => {
             [userId]
         );
 
-        // Calculate average progress
-        const avgProgress = projects.length > 0 
-            ? Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)
+        // Calculate average progress with completed projects normalized to 100%
+        const avgProgress = projects.length > 0
+            ? Math.round(projects.reduce((sum, p) => {
+                const raw = Number.isFinite(Number(p.progress)) ? Number(p.progress) : 0;
+                const pct = p.status === 'completed' && raw < 100 ? 100 : Math.min(Math.max(raw, 0), 100);
+                return sum + pct;
+            }, 0) / projects.length)
             : 0;
 
         // Return dashboard data in the expected format

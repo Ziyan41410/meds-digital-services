@@ -1289,6 +1289,12 @@ function getProgressColor(pct, late = false) {
   return 'var(--warning)';
 }
 
+function normalizeProjectProgress(p) {
+  const raw = Number.isFinite(Number(p?.progress)) ? Number(p.progress) : 0;
+  if (p?.status === 'completed' && raw < 100) return 100;
+  return Math.min(Math.max(raw, 0), 100);
+}
+
 /* ──────────────────────────────────────────────────────
    getDomainDetails — تفاصيل مخصصة حسب domain:
    dev → نوع المشروع + الميزات
@@ -1365,7 +1371,7 @@ function renderProjects(list) {
     const dateStr = endDate ? endDate.toLocaleDateString('ar-DZ', { year:'numeric', month:'short', day:'numeric' }) : '—';
 
     /* التقدم والألوان */
-    const pct   = p.progress ?? 0;
+    const pct   = normalizeProjectProgress(p);
     const color = getProgressColor(pct, isLate);
 
     /* التفاصيل حسب domain */

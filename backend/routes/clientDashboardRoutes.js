@@ -19,7 +19,15 @@ router.get('/', async (req, res) => {
             `SELECT
                 SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) AS active_projects,
                 SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_projects,
-                SUM(CASE WHEN status = 'completed' AND COALESCE(paid, 0) = 0 THEN 1 ELSE 0 END) AS pending_payments
+                SUM(CASE WHEN status = 'completed' AND COALESCE(paid, 0) = 0 THEN 1 ELSE 0 END) AS pending_payments,
+                ROUND(AVG(
+                    CASE
+                        WHEN status = 'completed' THEN 100
+                        WHEN COALESCE(progress, 0) < 0 THEN 0
+                        WHEN COALESCE(progress, 0) > 100 THEN 100
+                        ELSE COALESCE(progress, 0)
+                    END
+                ), 0) AS avg_progress
              FROM projects
              WHERE client_id = ?`,
             [clientId]
@@ -47,11 +55,8 @@ router.get('/', async (req, res) => {
             [clientId]
         );
 
-        const avgProgress = projects.length > 0
-            ? Math.round(projects.reduce((sum, project) => sum + Number(project.progress || 0), 0) / projects.length)
-            : 0;
-
         const stats = statsRows[0] || {};
+        const avgProgress = Number.isFinite(Number(stats.avg_progress)) ? Number(stats.avg_progress) : 0;
 
         res.json({
             success: true,
