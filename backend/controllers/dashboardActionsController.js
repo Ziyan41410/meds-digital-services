@@ -243,8 +243,8 @@ exports.getInvoices = async (req, res) => {
 
         const whereSql = whereClauses.length ? ('WHERE ' + whereClauses.join(' AND ')) : '';
 
-        // Count total for pagination
-        const countSql = `SELECT COUNT(*) as total FROM projects ${whereSql}`;
+        // Count total for pagination — use same alias `p` as in the main query
+        const countSql = `SELECT COUNT(*) as total FROM projects p ${whereSql}`;
         const [countResult] = await pool.query(countSql, params);
 
         // Inline numeric LIMIT/OFFSET after validation to avoid prepared-statement binding issues
